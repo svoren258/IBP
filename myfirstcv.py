@@ -6,11 +6,36 @@ import os
 import random
 import cv2
 import re
-import sys
+import sys, getopt
 import errno
 from matplotlib import pyplot as plt
 from PIL import Image
 
+inputnum = 0
+outputdir = 'znacky/'
+
+def argparse(argv):
+	global inputnum
+	global outputdir
+	try:
+		opts, args = getopt.getopt(argv,"hi:o:")
+	except getopt.GetoptError:
+		print 'myfirstcv.py -i [number] -o [output_dir_path]'
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print 'myfirstcv.py -i [number] -o [output_dir_path]'
+			sys.exit()
+		elif opt in ("-i"):
+			inputnum = arg
+		elif opt in ("-o"):
+			outputdir = arg
+	print 'Input num is: ', inputnum
+	print 'Output dir is: ', outputdir
+
+argparse(sys.argv[1:])
+
+# print(inputnum)
 
 #function definitions
 def generate_char(offset, images):
@@ -44,13 +69,13 @@ def generate_char(offset, images):
 #     cv2.imwrite('messigray.png',img)
 #     cv2.destroyAllWindows()
 
-# source = raw_input("Enter the path to scan:")
+# source = inputnum
 # os.chdir(source)
 
-num_str = raw_input("pocet znaciek:")
-num_int = int(num_str)
+# num_str = raw_input("pocet znaciek:")
+# num_int = int(num_str)
 images = []
-source = '/home/svoren258/Dokumenty/myopencv/characters/'
+source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/'
 os.chdir(source)
 for root, dirs, files in os.walk(source):
     for file_name in files:
@@ -66,17 +91,18 @@ for root, dirs, files in os.walk(source):
 # for imag in images:
 # 	print imag
 
-for i in range(num_int):
+
+for i in range(int(inputnum)):
 #char_img_w, char_img_h = char_img.size
-	background = Image.open('/home/svoren258/Dokumenty/myopencv/vzor.png', 'r')
+	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/vzor.png', 'r')
 	#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 	#bg_w, bg_h = background.size
-	stk_layout_img = Image.open('/home/svoren258/Dokumenty/myopencv/stk_ek2.png', 'r')
+	stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk_ek2.png', 'r')
 	stk_layout_offset = (681,53)
 	background.paste(stk_layout_img, stk_layout_offset)
 
 	if i % 2 == 0:
-		stk_img = Image.open('/home/svoren258/Dokumenty/myopencv/stk.png','r')
+		stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk.png','r')
 		stk_offset = (680,70)
 		background.paste(stk_img, stk_offset)
 
@@ -94,7 +120,8 @@ for i in range(num_int):
 		background.paste(character[0], offset)
 	# background.save('out.png')
 
-	filename = "/home/svoren258/Dokumenty/myopencv/znacky/"
+	# filename = "/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky"
+	filename = outputdir
 	if not os.path.exists(os.path.dirname(filename)):
 	    try:
 	        os.makedirs(os.path.dirname(filename))
@@ -102,4 +129,4 @@ for i in range(num_int):
 	        if exc.errno != errno.EEXIST:
 	            raise
 
-	background.save("/home/svoren258/Dokumenty/myopencv/znacky/znacka" + str(i) + ".png")
+	background.save(outputdir + "znacka" + str(i) + ".png")
