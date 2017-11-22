@@ -20,11 +20,11 @@ def argparse(argv):
 	try:
 		opts, args = getopt.getopt(argv,"hi:o:")
 	except getopt.GetoptError:
-		print 'myfirstcv.py -i [number] -o [output_dir_path]'
+		print 'Usage: python myfirstcv.py -i [number] -o [output_dir_path]'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'myfirstcv.py -i [number] -o [output_dir_path]'
+			print 'Usage: python myfirstcv.py -i [number] -o [output_dir_path]'
 			sys.exit()
 		elif opt in ("-i"):
 			inputnum = arg
