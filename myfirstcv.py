@@ -5,6 +5,7 @@ import io
 import os
 import random
 import cv2
+import shutil
 import re
 import sys, getopt
 import errno
@@ -12,7 +13,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 inputnum = 0
-outputdir = 'znacky/'
+outputdir = '../znacky/'
 
 def argparse(argv):
 	global inputnum
@@ -30,6 +31,7 @@ def argparse(argv):
 			inputnum = arg
 		elif opt in ("-o"):
 			outputdir = arg
+
 	print 'Input num is: ', inputnum
 	print 'Output dir is: ', outputdir
 
@@ -55,20 +57,6 @@ def generate_char(offset, images):
 	
 	return character
 
-
-# img = cv2.imread('/home/svoren258/Dokumenty/myopencv/messi.jpg',0)
-# plt.imshow(img, cmap = 'gray', interpolation = 'bicubic')
-# plt.xticks([]), plt.yticks([])
-# plt.show()
-
-# cv2.imshow('image', img)
-# k = cv2.waitKey(0) & 0xFF
-# if k == 27:         # wait for ESC key to exit
-#     cv2.destroyAllWindows() 
-# elif k == ord('s'): # wait for 's' key to save and exit
-#     cv2.imwrite('messigray.png',img)
-#     cv2.destroyAllWindows()
-
 # source = inputnum
 # os.chdir(source)
 
@@ -81,15 +69,6 @@ for root, dirs, files in os.walk(source):
     for file_name in files:
         img = Image.open(os.path.join(root, file_name), 'r')
         images.append([img,file_name])
-
-# filenames = ['0.png','1.png','2.png','3.png','4.png','5.png','6.png','7.png','8.png','9.png','A.png','B.png','C.png','D.png','E.png','F.png','H.png',
-# 'I.png','J.png','K.png','L.png','M.png','N.png','P.png','R.png','S.png','T.png','U.png','V.png','X.png','Y.png','Z.png']
-# for filename in filenames:
-# 	char_img = Image.open(StringIO(filename), 'r')
-# 	images.append(char_img)
-
-# for imag in images:
-# 	print imag
 
 
 for i in range(int(inputnum)):
@@ -119,8 +98,6 @@ for i in range(int(inputnum)):
 		# print character[1]
 		background.paste(character[0], offset)
 	# background.save('out.png')
-
-	# filename = "/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky"
 	filename = outputdir
 	if not os.path.exists(os.path.dirname(filename)):
 	    try:
@@ -128,5 +105,10 @@ for i in range(int(inputnum)):
 	    except OSError as exc: # Guard against race condition
 	        if exc.errno != errno.EEXIST:
 	            raise
+	# else:
+	# 	shutil.rmtree(outputdir)
+	# 	os.makedirs(os.path.dirname(outputdir))
+
+	# filename = "/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky"
 
 	background.save(outputdir + "znacka" + str(i) + ".png")
