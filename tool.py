@@ -12,6 +12,30 @@ from PIL import Image
 
 coordinates_x = []
 coordinates_y = []
+# path_to_dst = ''
+# path_to_src = ''
+
+# def argparse(argv):
+# 	global path_to_dst
+# 	global path_to_src
+# 	try:
+# 		opts, args = getopt.getopt(argv,"hs:d:")
+# 	except getopt.GetoptError:
+# 		print 'Usage: python myfirstcv.py -d [path_to_dst] -s [path_to_src]'
+# 		sys.exit(2)
+# 	for opt, arg in opts:
+# 		if opt == '-h':
+# 			print 'Usage: python myfirstcv.py -d [path_to_dst] -s [path_to_src]'
+# 			sys.exit()
+# 		elif opt in ("-d"):
+# 			path_to_dst = arg
+# 		elif opt in ("-s"):
+# 			path_to_src = arg
+
+# 	print 'Path to destination: ', path_to_dst
+# 	print 'Path to source: ', path_to_src
+
+# argparse(sys.argv[1:])
 
 def mouse_handler(event, x, y, flags, data) :
     global coordinates_y, coordinates_x
@@ -82,7 +106,9 @@ def get_four_points(im):
 
 # Read source image.
 #im_src = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/Les_Horribles_Cernettes_in_1992.jpg');
-im_src = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky/znacka1.png',1)
+im_src = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/RZ/rz1.png',1)
+#im_src = cv2.imread(path_to_src,1)
+
 
 size = im_src.shape
 
@@ -99,7 +125,8 @@ pts_src = np.array(
 
 # Read destination image
 #im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/times_square_night_2013.jpg');
-im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/fotosada/IMG_20171120_132413.jpg',1)
+im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/005.jpg',1)
+#im_dst = cv2.imread(path_to_dst,1)
 
 im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
 
@@ -121,7 +148,7 @@ cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
 im_out = im_dst + im_temp
 
 # Resize image to wanted size
-im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+# im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
 
 
 # Display image.
