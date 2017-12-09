@@ -12,8 +12,9 @@ import errno
 from matplotlib import pyplot as plt
 from PIL import Image
 
-coordinates_x = []
-coordinates_y = []
+# coordinates_x = []
+# coordinates_y = []
+coordinates = []
 # path_to_dst = ''
 # path_to_src = ''
 
@@ -40,13 +41,14 @@ coordinates_y = []
 # argparse(sys.argv[1:])
 
 def mouse_handler(event, x, y, flags, data) :
-    global coordinates_y, coordinates_x
+    global coordinates
     if event == cv2.EVENT_LBUTTONDOWN :
     	if len(data['points']) < 4 :
 	        img_copy = data['im'].copy()
 	        cv2.circle(data['im'], (x,y),1, (0,0,255), 5, 16);
 	        cv2.imshow("Image", data['im']);
 	        ix,iy = x, y
+
 	        while(1):
 	        	k = cv2.waitKey(20) & 0xFF
 	        	if k == ord('a'):
@@ -79,10 +81,13 @@ def mouse_handler(event, x, y, flags, data) :
 					continue
 	       		if k == ord('x'):
 	       			if len(data['points']) < 4 :
-					data['points'].append([x,y])
-					coordinates_x.append(x)
-					coordinates_y.append(y)
+						#coordinates.append([x,y])
+						data['points'].append([x,y])
+					# coordinates_x.append(x)
+					# coordinates_y.append(y)
 	       			break
+	       		# if k == ord('r'):
+	       		# 	print coordinates
         # if len(data['points']) < 4 :
         #     data['points'].append([x,y])
 
@@ -99,63 +104,67 @@ def get_four_points(im):
     cv2.waitKey(0)
     
     # Convert array to np.array
-    points = np.vstack(data['points']).astype(float)
+    #points = np.vstack(data['points']).astype(float)
     
-    return points
+    return data['points']
 
 
 #if __name__ == '__main__' :
 
 # Read source image.
 #im_src = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/Les_Horribles_Cernettes_in_1992.jpg');
-im_src = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/RZ/rz1.png',1)
-#im_src = cv2.imread(path_to_src,1)
+# im_src = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/RZ/rz1.png',1)
+# #im_src = cv2.imread(path_to_src,1)
 
 
-size = im_src.shape
+# size = im_src.shape
 
-# Create a vector of source points.
-pts_src = np.array(
-                   [
-                    [0,0],
-                    [size[1] - 1, 0],
-                    [size[1] - 1, size[0] -1],
-                    [0, size[0] - 1 ]
-                    ],dtype=float
-                   );
+# # Create a vector of source points.
+# pts_src = np.array(
+#                    [
+#                     [0,0],
+#                     [size[1] - 1, 0],
+#                     [size[1] - 1, size[0] -1],
+#                     [0, size[0] - 1 ]
+#                     ],dtype=float
+#                    );
 
 
 # Read destination image
 #im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/times_square_night_2013.jpg');
-im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/005.jpg',1)
+im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/001.jpg',1)
 #im_dst = cv2.imread(path_to_dst,1)
 
 im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
 
-#im_bef = im_dst.copy()
+# im_bef = im_dst.copy()
 # Get four corners of the billboard
-print 'Click on four corners and then press ENTER'
+# print 'Click on four corners and then press ENTER'
 pts_dst = get_four_points(im_dst)
 
+print pts_dst
+
+file = open("templates/001.jpg.txt","w")
+file.write(str(pts_dst)+"\n")
+file.close()
 # Calculate Homography between source and destination points
-h, status = cv2.findHomography(pts_src, pts_dst);
+# h, status = cv2.findHomography(pts_src, pts_dst);
 
-# Warp source image
-im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))
+# # Warp source image
+# im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))
 
-# Black out polygonal area in destination image.
-cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
+# # Black out polygonal area in destination image.
+# cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
 
-# Add warped source image to destination image.
-im_out = im_dst + im_temp
+# # Add warped source image to destination image.
+# im_out = im_dst + im_temp
 
 # Resize image to wanted size
 # im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
 
-
 # Display image.
 while(1):
-	cv2.imshow("Image", im_out)
+	cv2.imshow("Image", im_dst)
 	#cv2.imshow("Before", im_bef)
 	k = cv2.waitKey(20) & 0xFF
 	if k == 27:

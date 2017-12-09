@@ -7,13 +7,14 @@ import os
 import random
 import cv2
 import re
+import ast
 import sys, getopt
 import errno
 from matplotlib import pyplot as plt
 from PIL import Image
 
-coordinates_x = []
-coordinates_y = []
+# coordinates_x = []
+# coordinates_y = []
 # path_to_dst = ''
 # path_to_src = ''
 
@@ -39,69 +40,69 @@ coordinates_y = []
 
 # argparse(sys.argv[1:])
 
-def mouse_handler(event, x, y, flags, data) :
-    global coordinates_y, coordinates_x
-    if event == cv2.EVENT_LBUTTONDOWN :
-    	if len(data['points']) < 4 :
-	        img_copy = data['im'].copy()
-	        cv2.circle(data['im'], (x,y),1, (0,0,255), 5, 16);
-	        cv2.imshow("Image", data['im']);
-	        ix,iy = x, y
-	        while(1):
-	        	k = cv2.waitKey(20) & 0xFF
-	        	if k == ord('a'):
-	        		data['im'] = img_copy.copy()
-	        		cv2.circle(data['im'], (ix-1,iy),1, (0,0,255), 5, 16)
-	        		ix = ix-1
-	       			cv2.imshow("Image", data['im'])
-	       			continue
-	       		if k == ord('d'):
-					data['im'] = img_copy.copy()
-					cv2.circle(data['im'], (ix+1,iy),1, (0,0,255), 5, 16)
-					ix = ix+1
-					cv2.imshow("Image", data['im'])
-					continue
-	       		if k == ord('w'):
-	       			data['im'] = img_copy.copy()
-	        		cv2.circle(data['im'], (ix,iy-1),1, (0,0,255), 5, 16)
-	        		iy = iy-1
-	       			cv2.imshow("Image", data['im'])
-	       			continue
-	       		if k == ord('s'):
-	       			data['im'] = img_copy.copy()
-	        		cv2.circle(data['im'], (ix,iy+1),1, (0,0,255), 5, 16)
-	        		iy = iy+1
-	       			cv2.imshow("Image", data['im'])
-	       			continue
-	       		if k == ord('z'):
-					data['im'] = img_copy.copy()
-					cv2.imshow("Image", data['im'])
-					continue
-	       		if k == ord('x'):
-	       			if len(data['points']) < 4 :
-					data['points'].append([x,y])
-					coordinates_x.append(x)
-					coordinates_y.append(y)
-	       			break
+# def mouse_handler(event, x, y, flags, data) :
+#     # global coordinates_y, coordinates_x
+#     if event == cv2.EVENT_LBUTTONDOWN :
+#     	if len(data['points']) < 4 :
+# 	        img_copy = data['im'].copy()
+# 	        cv2.circle(data['im'], (x,y),1, (0,0,255), 5, 16);
+# 	        cv2.imshow("Image", data['im']);
+# 	        ix,iy = x, y
+# 	        while(1):
+# 	        	k = cv2.waitKey(20) & 0xFF
+# 	        	if k == ord('a'):
+# 	        		data['im'] = img_copy.copy()
+# 	        		cv2.circle(data['im'], (ix-1,iy),1, (0,0,255), 5, 16)
+# 	        		ix = ix-1
+# 	       			cv2.imshow("Image", data['im'])
+# 	       			continue
+# 	       		if k == ord('d'):
+# 					data['im'] = img_copy.copy()
+# 					cv2.circle(data['im'], (ix+1,iy),1, (0,0,255), 5, 16)
+# 					ix = ix+1
+# 					cv2.imshow("Image", data['im'])
+# 					continue
+# 	       		if k == ord('w'):
+# 	       			data['im'] = img_copy.copy()
+# 	        		cv2.circle(data['im'], (ix,iy-1),1, (0,0,255), 5, 16)
+# 	        		iy = iy-1
+# 	       			cv2.imshow("Image", data['im'])
+# 	       			continue
+# 	       		if k == ord('s'):
+# 	       			data['im'] = img_copy.copy()
+# 	        		cv2.circle(data['im'], (ix,iy+1),1, (0,0,255), 5, 16)
+# 	        		iy = iy+1
+# 	       			cv2.imshow("Image", data['im'])
+# 	       			continue
+# 	       		if k == ord('z'):
+# 					data['im'] = img_copy.copy()
+# 					cv2.imshow("Image", data['im'])
+# 					continue
+# 	       		if k == ord('x'):
+# 	       			if len(data['points']) < 4 :
+# 					data['points'].append([x,y])
+# 					# coordinates_x.append(x)
+# 					# coordinates_y.append(y)
+# 	       			break
         # if len(data['points']) < 4 :
         #     data['points'].append([x,y])
 
-def get_four_points(im):
+# def get_four_points(im):
     
-    # Set up data to send to mouse handler
-    data = {}
-    data['im'] = im.copy()
-    data['points'] = []
+#     # Set up data to send to mouse handler
+#     data = {}
+#     data['im'] = im.copy()
+#     data['points'] = []
     
-    #Set the callback function for any mouse event
-    cv2.imshow("Image",im)
-    cv2.setMouseCallback("Image", mouse_handler, data)
-    cv2.waitKey(0)
+#     #Set the callback function for any mouse event
+#     cv2.imshow("Image",im)
+#     cv2.setMouseCallback("Image", mouse_handler, data)
+#     cv2.waitKey(0)
     
-    # Convert array to np.array
-    points = np.vstack(data['points']).astype(float)
+#     # Convert array to np.array
+#     points = np.vstack(data['points']).astype(float)
     
-    return points
+#     return points
 
 
 #if __name__ == '__main__' :
@@ -127,7 +128,7 @@ pts_src = np.array(
 
 # Read destination image
 #im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/times_square_night_2013.jpg');
-im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/005.jpg',1)
+im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/001.jpg',1)
 #im_dst = cv2.imread(path_to_dst,1)
 
 im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
@@ -135,18 +136,28 @@ im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
 #im_bef = im_dst.copy()
 # Get four corners of the billboard
 print 'Click on four corners and then press ENTER'
-pts_dst = get_four_points(im_dst)
+
+file = open("templates/001.jpg.txt","r")
+#points = []
+points = file.read()
+#print points
+points = ast.literal_eval(points)
+#print points
+pts_dst = np.vstack(points).astype(float)
+print pts_dst
+# pts_dst = get_four_points(im_dst)
+
 
 # Calculate Homography between source and destination points
 h, status = cv2.findHomography(pts_src, pts_dst);
 
-# Warp source image
+# # Warp source image
 im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))
 
-# Black out polygonal area in destination image.
+# # Black out polygonal area in destination image.
 cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
 
-# Add warped source image to destination image.
+# # Add warped source image to destination image.
 im_out = im_dst + im_temp
 
 # Resize image to wanted size
