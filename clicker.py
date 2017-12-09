@@ -144,7 +144,17 @@ pts_dst = get_four_points(im_dst)
 
 print pts_dst
 
-file = open("templates/001.jpg.txt","w")
+
+filename = 'txt_coordinates/'
+if not os.path.exists(os.path.dirname(filename)):
+	try:
+	    os.makedirs(os.path.dirname(filename))
+	except OSError as exc: # Guard against race condition
+	    if exc.errno != errno.EEXIST:
+	        raise
+
+
+file = open("txt_coordinates/001.jpg.txt","w")
 file.write(str(pts_dst)+"\n")
 file.close()
 # Calculate Homography between source and destination points
