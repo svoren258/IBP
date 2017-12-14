@@ -73,7 +73,7 @@ for root, dirs, files in os.walk(source):
 
 for i in range(int(inputnum)):
 #char_img_w, char_img_h = char_img.size
-	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/vzor_final.png', 'r')
+	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/vzor_new.png', 'r')
 	#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 	#bg_w, bg_h = background.size
 	stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk_ek2.png', 'r')
@@ -110,5 +110,117 @@ for i in range(int(inputnum)):
 	# 	os.makedirs(os.path.dirname(outputdir))
 
 	# filename = "/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky"
+	background.save(outputdir + 'rz' + str(i) + '.png')
+	image = cv2.imread(outputdir + 'rz'+ str(i) + '.png',1)
+	
+	(B, G, R) = cv2.split(image)
 
-	background.save(outputdir + "rz" + str(i) + ".png")
+	R[R == 0] = 50
+	G[G == 0] = 50
+	B[B == 0] = 50
+
+	R[R == 255] = 200 
+ 	G[G == 255] = 200
+ 	B[B == 255] = 200
+
+	# merge the channels back together and return the image
+	image = cv2.merge([B, G, R])
+	dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
+	row,col,ch = dst.shape
+	s_vs_p = 0.5
+	amount = 0.004
+	out = np.copy(dst)
+	# Salt mode
+	num_salt = np.ceil(amount * dst.size * s_vs_p)
+	coords = [np.random.randint(0, j - 1, int(num_salt))
+	      for j in dst.shape]
+	out[coords] = 1
+
+	# Pepper mode
+	num_pepper = np.ceil(amount* dst.size * (1. - s_vs_p))
+	coords = [np.random.randint(0, j - 1, int(num_pepper))
+	      for j in dst.shape]
+	out[coords] = 0
+	#cv2.imshow('out',out)
+	# row,col,ch = dst.shape
+	# gauss = np.random.randn(row,col,ch)
+	# gauss = gauss.reshape(row,col,ch)        
+	# noisy = dst + dst * gauss
+	# cv2.imshow('noisy',noisy)
+	#median = cv2.medianBlur(image,9)
+	#cv2.imshow('bgr',out)
+	cv2.imwrite(outputdir + 'rz' + str(i) + '.png', out)
+	#Averaging
+	# kernel = np.ones((5,5),np.float32)/25
+	# dst = cv2.filter2D(image,-1,kernel)
+	# cv2.imshow('dst',dst)
+	# m = (0,0,0) 
+	# s = (0,0,0)
+	# cv2.randn(image,m,s)
+
+	#Denoising
+	# dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
+	# cv2.imshow('image',dst)
+	
+
+	#cv2.imshow('image',image)
+	#blur = cv2.bilateralFilter(image,9,75,75)
+	#cv2.imshow('blur',blur)
+	
+	#Only coloured object
+	# median = cv2.medianBlur(image,9)
+	# cv2.imshow('median',median)
+
+	# noise_sigma = 35
+	# temp_image = np.float64(np.copy(image))
+
+	# h = temp_image.shape[0]
+	# w = temp_image.shape[1]
+	# noise = np.random.randn(h, w) * noise_sigma
+
+	# noisy_image = np.zeros(temp_image.shape, np.float64)
+	# if len(temp_image.shape) == 2:
+	# 	noisy_image = temp_image + noise
+	# else:
+	# 	noisy_image[:,:,0] = temp_image[:,:,0] + noise
+	# 	noisy_image[:,:,1] = temp_image[:,:,1] + noise
+	# 	noisy_image[:,:,2] = temp_image[:,:,2] + noise
+
+	# cv2.imshow('noisy image',noisy_image)
+
+
+	#GAUSSIAN NOISE
+	# row,col,ch= image.shape
+	# mean = 0
+	# var = 0.1
+	# sigma = var**0.5
+	# gauss = np.random.normal(mean,sigma,(row,col,ch))
+	# gauss = gauss.reshape(row,col,ch)
+	# noisy = image + gauss
+
+	#SPECKLE
+	# row,col,ch = image.shape
+	# gauss = np.random.randn(row,col,ch)
+	# gauss = gauss.reshape(row,col,ch)        
+	# noisy = image + image * gauss
+	# cv2.imshow('noisy',noisy)
+
+	#S&P
+	# row,col,ch = image.shape
+	# s_vs_p = 0.5
+	# amount = 0.004
+	# out = np.copy(image)
+	# # Salt mode
+	# num_salt = np.ceil(amount * image.size * s_vs_p)
+	# coords = [np.random.randint(0, i - 1, int(num_salt))
+	#       for i in image.shape]
+	# out[coords] = 1
+
+	# # Pepper mode
+	# num_pepper = np.ceil(amount* image.size * (1. - s_vs_p))
+	# coords = [np.random.randint(0, i - 1, int(num_pepper))
+	#       for i in image.shape]
+	# out[coords] = 0
+	# cv2.imshow('out',out)
+	
+	#cv2.waitKey(0)
