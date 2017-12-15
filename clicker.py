@@ -108,7 +108,7 @@ def get_four_points(im):
     
     return data['points']
 
-filename = 'txt_coordinates/'
+filename = 'templates/'
 if not os.path.exists(os.path.dirname(filename)):
 	try:
 	    os.makedirs(os.path.dirname(filename))
@@ -121,6 +121,8 @@ if not os.path.exists(os.path.dirname(filename)):
 #im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/times_square_night_2013.jpg');
 for root, dirs, files in os.walk('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/'):
 	for file_name in files:
+		if file_name.endswith('.txt'):
+			continue
 		im_dst = cv2.imread('templates/'+file_name,1)
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
 
@@ -135,7 +137,7 @@ for root, dirs, files in os.walk('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IB
 		pts_dst = get_four_points(im_dst)
 
 		#print pts_dst
-		file = open('txt_coordinates/'+file_name+'.txt','w')
+		file = open('templates/'+file_name+'.txt','w')
 		file.write(str(pts_dst)+"\n")
 		file.close()
 		

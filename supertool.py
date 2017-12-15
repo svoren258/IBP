@@ -49,26 +49,6 @@ def argparse(argv):
 
 argparse(sys.argv[1:])
 
-
-def sort_list(my_list):
-	x = 0
-	for item in my_list:
-		y = 0
-		print 'item', item
-		for item2 in my_list:
-			print 'item2', item2
-			if (int(item[0]+item[1]+item[2]) == int(item2[0]+item2[1]+item2[2])):
-				continue
-			elif (int(item[0]+item[1]+item[2]) < int(item2[0]+item2[1]+item2[2])):
-				continue
-			elif (int(item[0]+item[1]+item[2]) > int(item2[0]+item2[1]+item2[2])):
-				print 'switch'
-				my_list[x], my_list[y] = my_list[y], my_list[x]
-			y += 1
-		x += 1
-	return my_list
-
-
 i = 0
 
 filename = path_to_output
@@ -81,6 +61,8 @@ if not os.path.exists(os.path.dirname(filename)):
 
 for root, dirs, files in os.walk(path_to_tmp):
 	for file_name in files:
+		if  file_name.endswith('.txt'):
+			continue
 		my_filenames.append(file_name)
 		my_filenames = sorted(my_filenames)
 		# print file_name
@@ -94,7 +76,7 @@ for file_name in my_filenames:
 	coordinates_y = []
 	i += 1
 	print file_name
-	file = open('txt_coordinates/'+file_name+'.txt','r')
+	file = open(path_to_tmp+file_name+'.txt','r')
 	#print file.read()
 	points = file.read()
 	#print points
