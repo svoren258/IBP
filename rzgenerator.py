@@ -14,6 +14,8 @@ from PIL import Image
 
 inputnum = 0
 outputdir = '../RZ/'
+#characters = []
+characters = ''
 
 def argparse(argv):
 	global inputnum
@@ -42,6 +44,7 @@ argparse(sys.argv[1:])
 #function definitions
 def generate_char(offset, images):
 	character = random.choice(images)
+	
 	regex = r"([A-Z].png)"
 	# if offset == (185, 20) and re.search(regex,character[1]):
 	# 	character = generate_char(offset, images)
@@ -95,9 +98,29 @@ for i in range(int(inputnum)):
 		#print offset
 		#character = random.choice(images)
 		character = generate_char(offset, images)
-		# print character[1]
+		
+		#characters.append(character[1][0])
+		characters += character[1][0]
+		#print character[1][0]
 		background.paste(character[0], offset)
 	# background.save('out.png')
+
+	#Saving registration nubmer
+	textdir = '../RZTXT/'
+	if not os.path.exists(os.path.dirname(textdir)):
+	    try:
+	        os.makedirs(os.path.dirname(textdir))
+	    except OSError as exc: # Guard against race condition
+	        if exc.errno != errno.EEXIST:
+	            raise
+
+	txtfile = open(textdir + 'rz' + str(i) + '.png.txt','w')
+	txtfile.write(str(characters))
+	txtfile.close()
+	#characters = []
+	characters = ''
+
+	#Creating output directory
 	filename = outputdir
 	if not os.path.exists(os.path.dirname(filename)):
 	    try:
@@ -112,7 +135,8 @@ for i in range(int(inputnum)):
 	# filename = "/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky"
 	background.save(outputdir + 'rz' + str(i) + '.png')
 	image = cv2.imread(outputdir + 'rz'+ str(i) + '.png',1)
-	
+	# image_data = np.asarray(background)
+
 	(B, G, R) = cv2.split(image)
 
 	R[R == 0] = 50

@@ -10,6 +10,7 @@ import re
 import ast
 import sys, getopt
 import errno
+import json
 from matplotlib import pyplot as plt
 from PIL import Image
 
@@ -99,6 +100,7 @@ for file_name in my_filenames:
 	im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
 
 	rz = random.choice(os.listdir(path_to_rz))
+
 	im_src = cv2.imread(path_to_rz+rz,1)
 
 	size = im_src.shape
@@ -128,12 +130,34 @@ for file_name in my_filenames:
 	#Resize image to wanted size
 	im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
 
+	textdir = 'RZTXT/'
+	if not os.path.exists(os.path.dirname(textdir)):
+	    try:
+	        os.makedirs(os.path.dirname(textdir))
+	    except OSError as exc: # Guard against race condition
+	        if exc.errno != errno.EEXIST:
+	            raise
+
+	#print json.dumps([1,'x','123'])
+	#open txt file with registration number and add max and min x and y coordinates and save in final directory as 00x.jpg.txt
+	txtfile = open(textdir + rz + '.txt','r')
+	reg_num = txtfile.readline()
+	#print reg_num
+	#txtfile.write(str(max(coordinates_x)) + ' ' + str(min(coordinates_x)) + ' ' + str(max(coordinates_y)) + ' ' + str(min(coordinates_y)) + '\n')
+	txtfile.close()
+
+	data = {
+		'string' : reg_num,
+		'max X' : max(coordinates_x),
+		'min X' : min(coordinates_x),
+		'max Y' : max(coordinates_y),
+		'min Y' : min(coordinates_y)
+	}
+
+	json_string = json.dumps(data, sort_keys=True)
+	json_file = open(filename+str(i)+'.jpg.json','w')
+	json_file.write(json_string)
+	json_file.close()
+
 	#Save image to wanted directory
 	cv2.imwrite(filename+str(i)+'.jpg',im_out)
-
-#my_filenames = my_filenames.sort()
-#my_filenames = sort_list(my_filenames)
-# my_filenames = sorted(my_filenames)
-# print my_filenames
-#print sorted(my_filenames, key=my_filenames[0])
-#print my_filenames
