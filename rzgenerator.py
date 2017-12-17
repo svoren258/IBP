@@ -83,10 +83,11 @@ for i in range(int(inputnum)):
 	stk_layout_offset = (681,53)
 	background.paste(stk_layout_img, stk_layout_offset)
 
-	if i % 2 == 0:
-		stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk.png','r')
-		stk_offset = (680,70)
-		background.paste(stk_img, stk_offset)
+	#STK
+	# if i % 2 == 0:
+	# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk.png','r')
+	# 	stk_offset = (680,70)
+	# 	background.paste(stk_img, stk_offset)
 
 	offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
@@ -98,7 +99,6 @@ for i in range(int(inputnum)):
 		#print offset
 		#character = random.choice(images)
 		character = generate_char(offset, images)
-		
 		#characters.append(character[1][0])
 		characters += character[1][0]
 		#print character[1][0]
@@ -106,7 +106,7 @@ for i in range(int(inputnum)):
 	# background.save('out.png')
 
 	#Saving registration nubmer
-	textdir = '../RZTXT/'
+	textdir = outputdir
 	if not os.path.exists(os.path.dirname(textdir)):
 	    try:
 	        os.makedirs(os.path.dirname(textdir))
@@ -121,21 +121,43 @@ for i in range(int(inputnum)):
 	characters = ''
 
 	#Creating output directory
-	filename = outputdir
-	if not os.path.exists(os.path.dirname(filename)):
-	    try:
-	        os.makedirs(os.path.dirname(filename))
-	    except OSError as exc: # Guard against race condition
-	        if exc.errno != errno.EEXIST:
-	            raise
+	# filename = outputdir
+	# if not os.path.exists(os.path.dirname(filename)):
+	#     try:
+	#         os.makedirs(os.path.dirname(filename))
+	#     except OSError as exc: # Guard against race condition
+	#         if exc.errno != errno.EEXIST:
+	#             raise
 	# else:
 	# 	shutil.rmtree(outputdir)
 	# 	os.makedirs(os.path.dirname(outputdir))
 
 	# filename = "/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/znacky"
+
+	#image_data = np.asarray( background.getdata(), dtype='uint8' )
+
+	#image_data = np.array(background.getdata(), np.uint8).reshape(background.size[0], background.size[1], 3)
+
+	#image_data = np.asarray(background.getdata(), np.uint8)
+
+	# img_data = background.convert('L')
+	# print img_data
+	# image_data = np.array(img_data)
+	# print background.size
+	# print image_data.size
+	# shape = image_data.shape
+	# print shape
+	# cv2.imshow('image',image_data)
+	# cv2.waitKey(20)
+
 	background.save(outputdir + 'rz' + str(i) + '.png')
-	image = cv2.imread(outputdir + 'rz'+ str(i) + '.png',1)
-	# image_data = np.asarray(background)
+	image = cv2.imread(outputdir + 'rz' + str(i) + '.png',1)
+	#print image.shape
+	
+	#print type(image)
+	
+	#image_data = np.asarray(background)
+	#print type(image_data)
 
 	(B, G, R) = cv2.split(image)
 
@@ -150,21 +172,24 @@ for i in range(int(inputnum)):
 	# merge the channels back together and return the image
 	image = cv2.merge([B, G, R])
 	dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
-	row,col,ch = dst.shape
-	s_vs_p = 0.5
-	amount = 0.004
-	out = np.copy(dst)
-	# Salt mode
-	num_salt = np.ceil(amount * dst.size * s_vs_p)
-	coords = [np.random.randint(0, j - 1, int(num_salt))
-	      for j in dst.shape]
-	out[coords] = 1
+	
+	# row,col,ch = dst.shape
+	# s_vs_p = 0.5
+	# amount = 0.004
+	# out = np.copy(dst)
+	# # Salt mode
+	# num_salt = np.ceil(amount * dst.size * s_vs_p)
+	# coords = [np.random.randint(0, j - 1, int(num_salt))
+	#       for j in dst.shape]
+	# out[coords] = 1
 
-	# Pepper mode
-	num_pepper = np.ceil(amount* dst.size * (1. - s_vs_p))
-	coords = [np.random.randint(0, j - 1, int(num_pepper))
-	      for j in dst.shape]
-	out[coords] = 0
+	# # Pepper mode
+	# num_pepper = np.ceil(amount* dst.size * (1. - s_vs_p))
+	# coords = [np.random.randint(0, j - 1, int(num_pepper))
+	#       for j in dst.shape]
+	# out[coords] = 0
+
+
 	#cv2.imshow('out',out)
 	# row,col,ch = dst.shape
 	# gauss = np.random.randn(row,col,ch)
@@ -173,7 +198,7 @@ for i in range(int(inputnum)):
 	# cv2.imshow('noisy',noisy)
 	#median = cv2.medianBlur(image,9)
 	#cv2.imshow('bgr',out)
-	cv2.imwrite(outputdir + 'rz' + str(i) + '.png', out)
+	cv2.imwrite(textdir + 'rz' + str(i) + '.png', dst)
 	#Averaging
 	# kernel = np.ones((5,5),np.float32)/25
 	# dst = cv2.filter2D(image,-1,kernel)
