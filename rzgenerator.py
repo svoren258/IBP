@@ -172,7 +172,9 @@ for i in range(int(inputnum)):
 	# merge the channels back together and return the image
 	image = cv2.merge([B, G, R])
 	dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
-	
+	blur = cv2.GaussianBlur(dst,(5,5),0)
+
+	cv2.imwrite(textdir + 'rz' + str(i) + '.png', blur)
 	# row,col,ch = dst.shape
 	# s_vs_p = 0.5
 	# amount = 0.004
@@ -198,7 +200,9 @@ for i in range(int(inputnum)):
 	# cv2.imshow('noisy',noisy)
 	#median = cv2.medianBlur(image,9)
 	#cv2.imshow('bgr',out)
-	cv2.imwrite(textdir + 'rz' + str(i) + '.png', dst)
+
+	# cv2.imwrite(textdir + 'rz' + str(i) + '.png', dst)
+
 	#Averaging
 	# kernel = np.ones((5,5),np.float32)/25
 	# dst = cv2.filter2D(image,-1,kernel)
@@ -210,7 +214,6 @@ for i in range(int(inputnum)):
 	#Denoising
 	# dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
 	# cv2.imshow('image',dst)
-	
 
 	#cv2.imshow('image',image)
 	#blur = cv2.bilateralFilter(image,9,75,75)

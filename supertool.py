@@ -81,6 +81,7 @@ for root, dirs, files in os.walk(path_to_rz):
 		im_dst = cv2.imread(path_to_tmp+tmp,1)
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
 
+		coordinates = []
 		coordinates_x = []
 		coordinates_y = []
 
@@ -90,10 +91,13 @@ for root, dirs, files in os.walk(path_to_rz):
 		points = file.read()
 		#print points
 		points = ast.literal_eval(points)
-
+		#print points
 		for point in points:
+			coordinates.append(point)
 			coordinates_x.append(point[0])
 			coordinates_y.append(point[1])
+
+		#print coordinates
 
 		pts_dst = np.vstack(points).astype(float)
 
@@ -111,7 +115,7 @@ for root, dirs, files in os.walk(path_to_rz):
 		h, status = cv2.findHomography(pts_src, pts_dst);
 
 		# Warp source image
-		im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))
+		im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))#, cv2.INTER_AREA)
 
 		# Black out polygonal area in destination image.
 		cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
@@ -137,10 +141,14 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		data = {
 			'string' : reg_num,
-			'max X' : max(coordinates_x),
-			'min X' : min(coordinates_x),
-			'max Y' : max(coordinates_y),
-			'min Y' : min(coordinates_y)
+			# 'max X' : max(coordinates_x),
+			# 'min X' : min(coordinates_x),
+			# 'max Y' : max(coordinates_y),
+			# 'min Y' : min(coordinates_y)
+			'point[0]' : coordinates[0],
+			'point[1]' : coordinates[1],
+			'point[2]' : coordinates[2],
+			'point[3]' : coordinates[3]
 		}
 
 		json_string = json.dumps(data, sort_keys=True)
@@ -148,9 +156,12 @@ for root, dirs, files in os.walk(path_to_rz):
 		json_file.write(json_string)
 		json_file.close()
 
-		#Save image to wanted directory
-		cv2.imwrite(filename+str(i)+'.jpg',im_out)
+		#Antialiasing/Gaussian blur added to whole image
+		blur = cv2.GaussianBlur(im_out,(5,5),0)
 
+		#Save image to wanted directory
+		#cv2.imwrite(filename+str(i)+'.jpg',im_out)
+		cv2.imwrite(filename+str(i)+'.jpg',blur)
 
 	############################################################################################################
 
