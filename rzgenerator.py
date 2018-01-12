@@ -151,6 +151,8 @@ for i in range(int(inputnum)):
 	# cv2.waitKey(20)
 
 	background.save(outputdir + 'rz' + str(i) + '.png')
+
+	###### OpenCV ######
 	image = cv2.imread(outputdir + 'rz' + str(i) + '.png',1)
 	#print image.shape
 	
@@ -159,22 +161,26 @@ for i in range(int(inputnum)):
 	#image_data = np.asarray(background)
 	#print type(image_data)
 
-	(B, G, R) = cv2.split(image)
+	# (B, G, R) = cv2.split(image)
 
-	R[R == 0] = 50
-	G[G == 0] = 50
-	B[B == 0] = 50
+	# R[R == 0] = 50
+	# G[G == 0] = 50
+	# B[B == 0] = 50
 
-	R[R == 255] = 200 
- 	G[G == 255] = 200
- 	B[B == 255] = 200
+	# R[R == 255] = 200 
+ 	# G[G == 255] = 200
+ 	# B[B == 255] = 200
 
-	# merge the channels back together and return the image
-	image = cv2.merge([B, G, R])
-	dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
-	blur = cv2.GaussianBlur(dst,(5,5),0)
+	# #merge the channels back together and return the image
+	# image = cv2.merge([B, G, R])
 
-	cv2.imwrite(textdir + 'rz' + str(i) + '.png', blur)
+	# dst = cv2.fastNlMeansDenoisingColored(image,None,10,10,7,21)
+	# blur = cv2.GaussianBlur(dst,(5,5),0)
+
+	# cv2.imwrite(textdir + 'rz' + str(i) + '.png', blur)
+
+	cv2.imwrite(textdir + 'rz' + str(i) + '.png', image)
+
 	# row,col,ch = dst.shape
 	# s_vs_p = 0.5
 	# amount = 0.004
@@ -216,8 +222,8 @@ for i in range(int(inputnum)):
 	# cv2.imshow('image',dst)
 
 	#cv2.imshow('image',image)
-	#blur = cv2.bilateralFilter(image,9,75,75)
-	#cv2.imshow('blur',blur)
+	# blur = cv2.bilateralFilter(image,9,75,75)
+	# cv2.imshow('blur',blur)
 	
 	#Only coloured object
 	# median = cv2.medianBlur(image,9)
@@ -240,7 +246,6 @@ for i in range(int(inputnum)):
 
 	# cv2.imshow('noisy image',noisy_image)
 
-
 	#GAUSSIAN NOISE
 	# row,col,ch= image.shape
 	# mean = 0
@@ -249,6 +254,7 @@ for i in range(int(inputnum)):
 	# gauss = np.random.normal(mean,sigma,(row,col,ch))
 	# gauss = gauss.reshape(row,col,ch)
 	# noisy = image + gauss
+	# cv2.imshow('noisy', noisy)
 
 	#SPECKLE
 	# row,col,ch = image.shape
@@ -275,4 +281,4 @@ for i in range(int(inputnum)):
 	# out[coords] = 0
 	# cv2.imshow('out',out)
 	
-	#cv2.waitKey(0)
+	# cv2.waitKey(0)

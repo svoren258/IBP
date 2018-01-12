@@ -74,12 +74,63 @@ for root, dirs, files in os.walk(path_to_rz):
 			continue
 
 		im_src = cv2.imread(path_to_rz+file_name,1)
+
+		#########################################################
+		#TODO 
+		#According to Black (minimum) and White (maximum) value of original registration number change values of channels in synthetic registration number
+		(B, G, R) = cv2.split(im_src)
+
+		R[R == 0] = 50
+		G[G == 0] = 50
+		B[B == 0] = 50
+
+		R[R == 255] = 200 
+	 	G[G == 255] = 200
+	 	B[B == 255] = 200
+
+		# merge the channels back together and return the image
+		im_src = cv2.merge([B, G, R])
+
+		#dst = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
+		#im_src = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
+		#im_src = cv2.GaussianBlur(dst,(5,5),0)
+
+		#GAUSSIAN NOISE
+		# row,col,ch = im_src.shape
+		# mean = 0
+		# var = 0.1
+		# sigma = var**0.5
+		# gauss = np.random.normal(mean,sigma,(row,col,ch))
+		# gauss = gauss.reshape(row,col,ch)
+		# im_src = im_src + gauss
+		###########################################################
 		
 		#tmp = random.choice(os.listdir(path_to_tmp))
 		tmp = random.choice(my_filenames)
 		print tmp
 		im_dst = cv2.imread(path_to_tmp+tmp,1)
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
+
+		#RGB channels number
+		#max_channels = np.amax([np.amax(im_dst[:,:,0]), np.amax(im_dst[:,:,1]), np.amax(im_dst[:,:,2])])
+		#TODO
+		#Find maximum and minumum RGB channel values of destination image
+		#(B, G, R) = cv2.split(im_dst)
+		# print 'B', B[0][0]
+		# print 'G', G[0][0]
+		# print 'R', R[0][0]
+		
+		#smallest = np.amin(im_dst)
+		#biggest = np.amax(im_dst)
+		
+		#Histogram 
+		# color = ('b','g','r')
+		# for j,col in enumerate(color):
+		# 	histr = cv2.calcHist([im_dst],[j],None,[256],[0,256])
+		# 	plt.plot(histr,color = col)
+		# 	plt.xlim([0,256])
+		# plt.show()
+		############
 
 		coordinates = []
 		coordinates_x = []
@@ -141,10 +192,6 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		data = {
 			'string' : reg_num,
-			# 'max X' : max(coordinates_x),
-			# 'min X' : min(coordinates_x),
-			# 'max Y' : max(coordinates_y),
-			# 'min Y' : min(coordinates_y)
 			'point[0]' : coordinates[0],
 			'point[1]' : coordinates[1],
 			'point[2]' : coordinates[2],
