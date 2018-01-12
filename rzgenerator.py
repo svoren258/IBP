@@ -153,7 +153,9 @@ for i in range(int(inputnum)):
 	background.save(outputdir + 'rz' + str(i) + '.png')
 
 	###### OpenCV ######
-	image = cv2.imread(outputdir + 'rz' + str(i) + '.png',1)
+	#image = cv2.imread(outputdir + 'rz' + str(i) + '.png',1)
+
+	#cv2.imwrite(textdir + 'rz' + str(i) + '.png', image)
 	#print image.shape
 	
 	#print type(image)
@@ -179,7 +181,7 @@ for i in range(int(inputnum)):
 
 	# cv2.imwrite(textdir + 'rz' + str(i) + '.png', blur)
 
-	cv2.imwrite(textdir + 'rz' + str(i) + '.png', image)
+	#cv2.imwrite(textdir + 'rz' + str(i) + '.png', image)
 
 	# row,col,ch = dst.shape
 	# s_vs_p = 0.5

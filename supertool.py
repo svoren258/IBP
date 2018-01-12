@@ -74,6 +74,41 @@ for root, dirs, files in os.walk(path_to_rz):
 			continue
 
 		im_src = cv2.imread(path_to_rz+file_name,1)
+		
+		#tmp = random.choice(os.listdir(path_to_tmp))
+		tmp = random.choice(my_filenames)
+		print tmp
+		im_dst = cv2.imread(path_to_tmp+tmp,1)
+		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
+
+		coordinates = []
+		coordinates_x = []
+		coordinates_y = []
+
+		i += 1
+
+		file = open(path_to_tmp + tmp + '.txt','r')
+		points = file.read()
+		#print points
+		points = ast.literal_eval(points)
+		#print points
+		for point in points:
+			coordinates.append(point)
+			coordinates_x.append(point[0])
+			coordinates_y.append(point[1])
+
+		#print coordinates
+		
+		# the area, we are looking for in original image		
+		im_rgb = im_dst[int(min(coordinates_y)):int(max(coordinates_y)), int(min(coordinates_x)):int(max(coordinates_x))]
+
+		# the area of the image with the largest intensity value
+		gray = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2GRAY)
+		(minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)
+		# print 'minVal', minVal
+		# print 'maxVal', maxVal
+		# print 'minLoc', minLoc
+		# print 'maxLoc', maxLoc
 
 		#########################################################
 		#TODO 
@@ -104,51 +139,15 @@ for root, dirs, files in os.walk(path_to_rz):
 		# gauss = gauss.reshape(row,col,ch)
 		# im_src = im_src + gauss
 		###########################################################
-		
-		#tmp = random.choice(os.listdir(path_to_tmp))
-		tmp = random.choice(my_filenames)
-		print tmp
-		im_dst = cv2.imread(path_to_tmp+tmp,1)
-		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
 
-		#RGB channels number
-		#max_channels = np.amax([np.amax(im_dst[:,:,0]), np.amax(im_dst[:,:,1]), np.amax(im_dst[:,:,2])])
-		#TODO
-		#Find maximum and minumum RGB channel values of destination image
-		#(B, G, R) = cv2.split(im_dst)
-		# print 'B', B[0][0]
-		# print 'G', G[0][0]
-		# print 'R', R[0][0]
-		
-		#smallest = np.amin(im_dst)
-		#biggest = np.amax(im_dst)
-		
 		#Histogram 
 		# color = ('b','g','r')
 		# for j,col in enumerate(color):
-		# 	histr = cv2.calcHist([im_dst],[j],None,[256],[0,256])
+		# 	histr = cv2.calcHist([im_rgb],[j],None,[256],[0,256])
 		# 	plt.plot(histr,color = col)
 		# 	plt.xlim([0,256])
 		# plt.show()
 		############
-
-		coordinates = []
-		coordinates_x = []
-		coordinates_y = []
-
-		i += 1
-
-		file = open(path_to_tmp + tmp + '.txt','r')
-		points = file.read()
-		#print points
-		points = ast.literal_eval(points)
-		#print points
-		for point in points:
-			coordinates.append(point)
-			coordinates_x.append(point[0])
-			coordinates_y.append(point[1])
-
-		#print coordinates
 
 		pts_dst = np.vstack(points).astype(float)
 
