@@ -50,6 +50,25 @@ def argparse(argv):
 
 argparse(sys.argv[1:])
 
+# gaussian noise applying function
+def add_gaussian_noise(image_in):
+	noise_sigma = 35
+	temp_image = np.float64(np.copy(image_in))
+
+	h = temp_image.shape[0]
+	w = temp_image.shape[1]
+	noise = np.random.randn(h, w) * noise_sigma
+
+	noisy_image = np.zeros(temp_image.shape, np.float64)
+	if len(temp_image.shape) == 2:
+	    noisy_image = temp_image + noise
+	else:
+	    noisy_image[:,:,0] = temp_image[:,:,0] + noise
+	    noisy_image[:,:,1] = temp_image[:,:,1] + noise
+	    noisy_image[:,:,2] = temp_image[:,:,2] + noise
+
+	return noisy_image
+
 i = 0
 
 filename = path_to_output
@@ -105,10 +124,12 @@ for root, dirs, files in os.walk(path_to_rz):
 		# the area of the image with the largest intensity value
 		gray = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2GRAY)
 		(minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)
-		# print 'minVal', minVal
-		# print 'maxVal', maxVal
-		# print 'minLoc', minLoc
-		# print 'maxLoc', maxLoc
+
+		# black and white values, 10% from smallest and greatest value (minVal, maxVal)
+		interval = (maxVal - minVal)
+		percentil = int(interval / 10)
+		white_num = minVal + percentil
+		black_num = maxVal - percentil
 
 		#########################################################
 		#TODO 
@@ -119,13 +140,22 @@ for root, dirs, files in os.walk(path_to_rz):
 		G[G == 0] = 50
 		B[B == 0] = 50
 
-		R[R == 255] = 200 
+		R[R == 255] = 200
 	 	G[G == 255] = 200
 	 	B[B == 255] = 200
+
+		# R[R == 0] = white_num
+		# G[G == 0] = white_num
+		# B[B == 0] = white_num
+
+		# R[R == 255] = black_num
+	 # 	G[G == 255] = black_num
+	 # 	B[B == 255] = black_num
 
 		# merge the channels back together and return the image
 		im_src = cv2.merge([B, G, R])
 
+		im_src = add_gaussian_noise(im_src)
 		#dst = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
 		#im_src = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
 		#im_src = cv2.GaussianBlur(dst,(5,5),0)
