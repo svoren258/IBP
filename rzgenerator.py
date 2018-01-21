@@ -44,6 +44,10 @@ argparse(sys.argv[1:])
 #function definitions
 def generate_char(offset, images):
 	character = random.choice(images)
+
+	if offset == (205,53) and character[1] == '0.png':
+		character = generate_char(offset, images)
+		return character
 	
 	regex = r"([A-Z].png)"
 	# if offset == (185, 20) and re.search(regex,character[1]):

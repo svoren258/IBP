@@ -52,7 +52,7 @@ argparse(sys.argv[1:])
 
 # gaussian noise applying function
 def add_gaussian_noise(image_in):
-	noise_sigma = 35
+	noise_sigma = 15
 	temp_image = np.float64(np.copy(image_in))
 
 	h = temp_image.shape[0]
