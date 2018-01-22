@@ -84,14 +84,20 @@ for i in range(int(inputnum)):
 	#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 	#bg_w, bg_h = background.size
 	stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek2.png', 'r')
-	stk_layout_offset = (681,53)
+	stk_layout_offset = (681,41) #(681,53)
 	background.paste(stk_layout_img, stk_layout_offset)
 
-	#STK
+	# #STK
 	# if i % 2 == 0:
-	# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk.png','r')
-	# 	stk_offset = (680,70)
+	# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk.png','r')
+	# 	stk_offset = (680,58)
 	# 	background.paste(stk_img, stk_offset)
+
+	# #EK
+	# if i % 4 == 0:
+	# 	ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
+	# 	ek_offset = (680,183)
+	# 	background.paste(ek_img, ek_offset)
 
 	offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
