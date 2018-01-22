@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 inputnum = 0
-outputdir = '../RZ/'
+outputdir = '../../RZ/'
 #characters = []
 characters = ''
 
@@ -70,7 +70,7 @@ def generate_char(offset, images):
 # num_str = raw_input("pocet znaciek:")
 # num_int = int(num_str)
 images = []
-source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/'
+source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/characters/'
 os.chdir(source)
 for root, dirs, files in os.walk(source):
     for file_name in files:
@@ -80,10 +80,10 @@ for root, dirs, files in os.walk(source):
 
 for i in range(int(inputnum)):
 #char_img_w, char_img_h = char_img.size
-	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/vzor_new.png', 'r')
+	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_new.png', 'r')
 	#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 	#bg_w, bg_h = background.size
-	stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/vzory/stk_ek2.png', 'r')
+	stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek2.png', 'r')
 	stk_layout_offset = (681,53)
 	background.paste(stk_layout_img, stk_layout_offset)
 
@@ -99,6 +99,29 @@ for i in range(int(inputnum)):
 	# for offset in offsets:
 	# 	background.paste(a_img, offset)
 
+	# for offset in offsets:
+	# 	if offset == (205,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/D.png', 'r')
+	# 		background.paste(char, offset)
+	# 	elif offset == (358,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/A.png', 'r')
+	# 		background.paste(char, offset)
+	# 	elif offset == (511,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/K.png', 'r')
+	# 		background.paste(char, offset)
+	# 	elif offset == (854,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/U.png', 'r')
+	# 		background.paste(char, offset)
+	# 	elif offset == (1007,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/J.png', 'r')
+	# 		background.paste(char, offset)
+	# 	elif offset == (1160,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/E.png', 'r')
+	# 		background.paste(char, offset)
+	# 	elif offset == (1313,53):
+	# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/M.png', 'r')
+	# 		background.paste(char, offset)
+
 	for offset in offsets:
 		#print offset
 		#character = random.choice(images)
@@ -107,7 +130,6 @@ for i in range(int(inputnum)):
 		characters += character[1][0]
 		#print character[1][0]
 		background.paste(character[0], offset)
-	# background.save('out.png')
 
 	#Saving registration nubmer
 	textdir = outputdir

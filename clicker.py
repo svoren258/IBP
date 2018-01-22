@@ -15,30 +15,27 @@ from PIL import Image
 # coordinates_x = []
 # coordinates_y = []
 coordinates = []
+src_path = ''
 # path_to_dst = ''
 # path_to_src = ''
 
-# def argparse(argv):
-# 	global path_to_dst
-# 	global path_to_src
-# 	try:
-# 		opts, args = getopt.getopt(argv,"hs:d:")
-# 	except getopt.GetoptError:
-# 		print 'Usage: python myfirstcv.py -d [path_to_dst] -s [path_to_src]'
-# 		sys.exit(2)
-# 	for opt, arg in opts:
-# 		if opt == '-h':
-# 			print 'Usage: python myfirstcv.py -d [path_to_dst] -s [path_to_src]'
-# 			sys.exit()
-# 		elif opt in ("-d"):
-# 			path_to_dst = arg
-# 		elif opt in ("-s"):
-# 			path_to_src = arg
+def argparse(argv):
+	global path
+	try:
+		opts, args = getopt.getopt(argv,"hi:o:")
+	except getopt.GetoptError:
+		print 'Usage: python clicker.py -i [src_path]'
+		sys.exit(2)
+	for opt, arg in opts:
+		if opt == '-h':
+			print 'Usage: python clicker.py -i [src_path]'
+			sys.exit()
+		elif opt in ("-i"):
+			src_path = arg
 
-# 	print 'Path to destination: ', path_to_dst
-# 	print 'Path to source: ', path_to_src
+	print 'Source Path: ', src_path
 
-# argparse(sys.argv[1:])
+argparse(sys.argv[1:])
 
 def mouse_handler(event, x, y, flags, data) :
     global coordinates
@@ -108,7 +105,7 @@ def get_four_points(im):
     
     return data['points']
 
-filename = 'templates/'
+filename = 'photo_templates_front/'
 if not os.path.exists(os.path.dirname(filename)):
 	try:
 	    os.makedirs(os.path.dirname(filename))
@@ -118,12 +115,11 @@ if not os.path.exists(os.path.dirname(filename)):
 
 
 # Read destination image
-#im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/times_square_night_2013.jpg');
-for root, dirs, files in os.walk('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/'):
+for root, dirs, files in os.walk('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/photo_templates_front/'):
 	for file_name in files:
 		if file_name.endswith('.txt'):
 			continue
-		im_dst = cv2.imread('templates/'+file_name,1)
+		im_dst = cv2.imread('photo_templates_front/'+file_name,1)
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
 
 		#im_dst = cv2.imread('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/templates/001.jpg',1)
@@ -137,7 +133,7 @@ for root, dirs, files in os.walk('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IB
 		pts_dst = get_four_points(im_dst)
 
 		#print pts_dst
-		file = open('templates/'+file_name+'.txt','w')
+		file = open('photo_templates_front/'+file_name+'.txt','w')
 		file.write(str(pts_dst)+"\n")
 		file.close()
 		
