@@ -19,7 +19,7 @@ coordinates_y = []
 # path_to_dst = ''
 # path_to_src = ''
 
-path_to_tmp = 'templates/'
+path_to_tmp = 'photo_templates_front2/'
 path_to_rz = 'RZ/'
 path_to_output = 'final/'
 my_filenames = []
