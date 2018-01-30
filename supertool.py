@@ -92,13 +92,20 @@ for root, dirs, files in os.walk(path_to_rz):
 		if file_name.endswith('.txt'):
 			continue
 
+		# #PIL version
+		# tmp = random.choice(my_filenames)
+		# im = Image.open(path_to_tmp+tmp)
+		# hist = Image.histogram(im)
+		# print hist
+		############
+
 		im_src = cv2.imread(path_to_rz+file_name,1)
 		
 		#tmp = random.choice(os.listdir(path_to_tmp))
 		tmp = random.choice(my_filenames)
 		print tmp
 		im_dst = cv2.imread(path_to_tmp+tmp,1)
-		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25)
+		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25, interpolation = cv2.INTER_AREA)
 
 		coordinates = []
 		coordinates_x = []
@@ -213,6 +220,8 @@ for root, dirs, files in os.walk(path_to_rz):
 		#     except OSError as exc: # Guard against race condition
 		#         if exc.errno != errno.EEXIST:
 		#             raise
+		#Antialiasing
+		#im_out = cv2.resize(im_out, (0,0), fx=1.0, fy=1.0, interpolation = cv2.INTER_AREA)
 
 		#open txt file with registration number and add max and min x and y coordinates and save in final directory as 00x.jpg.txt
 		txtfile = open(path_to_rz + file_name + '.txt','r')
@@ -220,11 +229,11 @@ for root, dirs, files in os.walk(path_to_rz):
 		txtfile.close()
 
 		data = {
-			'string' : reg_num,
-			'point[0]' : coordinates[0],
-			'point[1]' : coordinates[1],
-			'point[2]' : coordinates[2],
-			'point[3]' : coordinates[3]
+			'lp_text' : reg_num,
+			'point0' : coordinates[0],
+			'point1' : coordinates[1],
+			'point2' : coordinates[2],
+			'point3' : coordinates[3]
 		}
 
 		json_string = json.dumps(data, sort_keys=True)
@@ -238,6 +247,14 @@ for root, dirs, files in os.walk(path_to_rz):
 		#Save image to wanted directory
 		#cv2.imwrite(filename+str(i)+'.jpg',im_out)
 		cv2.imwrite(filename+str(i)+'.jpg',blur)
+
+
+		#PIL variant of ANTIALIASING
+		# im = Image.open(filename+str(i)+'.jpg')
+		# width,height = im.size
+		# out = im.resize((width, height), Image.ANTIALIAS)
+		# out.save(filename+str(i)+'_PIL'+'.jpg', quality=100)
+
 
 	############################################################################################################
 
