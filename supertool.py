@@ -31,11 +31,11 @@ def argparse(argv):
 	try:
 		opts, args = getopt.getopt(argv,"ht:r:o:")
 	except getopt.GetoptError:
-		print 'Usage: python supertool.py -t [path_to_tmp] -r [path_to_rz] -o [path_to_output]'
+		print ('Usage: python supertool.py -t [path_to_tmp] -r [path_to_rz] -o [path_to_output]')
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'Usage: python supertool.py -t [path_to_tmp] -r [path_to_rz] -o [path_to_output]'
+			print ('Usage: python supertool.py -t [path_to_tmp] -r [path_to_rz] -o [path_to_output]')
 			sys.exit()
 		elif opt in ('-t'):
 			path_to_tmp = arg
@@ -44,11 +44,16 @@ def argparse(argv):
 		elif opt in ('-o'):
 			path_to_output = arg
 
-	print 'Path to templates: ', path_to_tmp
-	print 'Path to rz: ', path_to_rz
-	print 'Path to output: ', path_to_output
+	print ('Path to templates: ', path_to_tmp)
+	print ('Path to rz: ', path_to_rz)
+	print ('Path to output: ', path_to_output)
 
 argparse(sys.argv[1:])
+
+def showImage(image, name='img'):
+	cv2.imshow(name,image)
+	cv2.waitKey(0)
+	cv2.destroyAllWindows()
 
 # gaussian noise applying function
 def add_gaussian_noise(image_in):
@@ -69,6 +74,29 @@ def add_gaussian_noise(image_in):
 
 	return noisy_image
 
+
+def rgbChangeVal(min, max, image):
+    #According to Black (minimum) and White (maximum) value of original registration number change values of channels in synthetic registration number
+    #(B, G, R) = cv2.split(image)
+
+    # for x in range(0,50):
+       #  R[R == x] = min
+       #  G[G == x] = min
+       #  B[B == x] = min
+
+	(B, G, R) = cv2.split(image)
+	R[R == 0] = min
+	G[G == 0] = min
+	B[B == 0] = min	    
+	R[R == 255] = max
+	G[G == 255] = max
+	B[B == 255] = max
+
+	# merge the channels back together and return the image
+	image = cv2.merge([B, G, R])
+	return image
+    
+    
 i = 0
 
 filename = path_to_output
@@ -101,10 +129,11 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		im_src = cv2.imread(path_to_rz+file_name,1)
 		
-		#tmp = random.choice(os.listdir(path_to_tmp))
-		tmp = random.choice(my_filenames)
-		print tmp
+		#tmp = random.choice(my_filenames)
+		tmp = '047.jpg'
+		print (tmp)
 		im_dst = cv2.imread(path_to_tmp+tmp,1)
+
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25, interpolation = cv2.INTER_AREA)
 
 		coordinates = []
@@ -125,7 +154,8 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		#print coordinates
 		
-		# the area, we are looking for in original image		
+		#Changing the RGB channel values according to the intensity of grayscale image
+		#The area, we are looking for in original image		
 		im_rgb = im_dst[int(min(coordinates_y)):int(max(coordinates_y)), int(min(coordinates_x)):int(max(coordinates_x))]
 
 		# the area of the image with the largest intensity value
@@ -138,31 +168,35 @@ for root, dirs, files in os.walk(path_to_rz):
 		white_num = minVal + percentil
 		black_num = maxVal - percentil
 
+
+		#HSV - hue, saturation, value
+		# x = cv2.merge([np.uint8([90]), np.uint8([90]), np.uint8([90])])
+		# res = cv2.add(im_src,x)
+
+		# hsv = cv2.cvtColor(im_src, cv2.COLOR_BGR2HSV)
+		# showImage(hsv)
+		# h, s, v = cv2.split(hsv)
+		# v -= 50
+		# darker = cv2.merge((h, s, v))
+		# # #back to RGB
+		# res = cv2.cvtColor(darker, cv2.COLOR_HSV2BGR)
+		# showImage(res)
+
+
+		# height, width = im_src.shape[:2]
+		# print(height, width)
+		# for y in range(0,height-1):
+		# 	for x in range(0,width-1):
+		# 		im_src[y,x] -= 150
+		# showImage(im_src)
+		#showImage(im_src)
+
 		#########################################################
-		#TODO 
-		#According to Black (minimum) and White (maximum) value of original registration number change values of channels in synthetic registration number
-		(B, G, R) = cv2.split(im_src)
-
-		R[R == 0] = 50
-		G[G == 0] = 50
-		B[B == 0] = 50
-
-		R[R == 255] = 200
-	 	G[G == 255] = 200
-	 	B[B == 255] = 200
-
-		# R[R == 0] = white_num
-		# G[G == 0] = white_num
-		# B[B == 0] = white_num
-
-		# R[R == 255] = black_num
-	 # 	G[G == 255] = black_num
-	 # 	B[B == 255] = black_num
-
-		# merge the channels back together and return the image
-		im_src = cv2.merge([B, G, R])
-
-		im_src = add_gaussian_noise(im_src)
+		
+		im_src = rgbChangeVal(50,200,im_src)
+		#showImage(im_src)
+      
+		
 		#dst = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
 		#im_src = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
 		#im_src = cv2.GaussianBlur(dst,(5,5),0)
@@ -188,6 +222,13 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		pts_dst = np.vstack(points).astype(float)
 
+		# Small registration number - antialiasing
+		im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
+
+        #Application of Gaussian noise
+		im_src = add_gaussian_noise(im_src)
+		#showImage(im_src)
+
 		size = im_src.shape
 
 		pts_src = np.array(
@@ -199,20 +240,50 @@ for root, dirs, files in os.walk(path_to_rz):
 				            ],dtype=float
 				           );
 
-		h, status = cv2.findHomography(pts_src, pts_dst);
+		# Find homography
+		h, status = cv2.findHomography(pts_src, pts_dst)
 
 		# Warp source image
-		im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]))#, cv2.INTER_AREA)
+		#im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)
+		im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)#, borderMode=cv2.BORDER_TRANSPARENT)
+		
+
+		# Get Perspective transformation matrix
+		# pts_dst_array = np.array([[358,253],[674,348],[660,400],[363,307]],np.float32)
+		# pts_src_array = np.array([[0,0],[1559,0],[1559,329],[0,329]],np.float32)
+
+		# Another function to findHomography()
+		#perspectiveMatrix = cv2.getPerspectiveTransform(pts_src_array, pts_dst_array)
+		
+		# print perspectiveMatrix
+		# im_perspective = cv2.warpPerspective(im_src, perspectiveMatrix, (im_dst.shape[1],im_dst.shape[0]), flags=cv2.INTER_LINEAR)
+		#showImage(im_perspective)
 
 		# Black out polygonal area in destination image.
 		cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
 
+		# ANTIALIASING to im_temp
+
+		#showImage(im_temp, 'temp1')
+
+		#showImage(im_dst)
+
 		# Add warped source image to destination image.
 		im_out = im_dst + im_temp
 
+		#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_AREA)
+		#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_LINEAR)
+		#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_CUBIC)
+
+		#showImage(im_out,'im_out')
+		#showImage(im_out_linear,'im_linear')
+		#showImage(im_out_cubic,'im_cubic')
+		
 		#Resize image to wanted size
 		im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+		#im_out = im_out[int(0.75*0.8*min(coordinates_y)):int(0.75*1.2*max(coordinates_y)), int(0.75*0.8*min(coordinates_x)):int(0.75*1.2*max(coordinates_x))]
 
+		#showImage(im_out)
 		# textdir = path_to_rz
 		# if not os.path.exists(os.path.dirname(textdir)):
 		#     try:
@@ -220,6 +291,7 @@ for root, dirs, files in os.walk(path_to_rz):
 		#     except OSError as exc: # Guard against race condition
 		#         if exc.errno != errno.EEXIST:
 		#             raise
+		
 		#Antialiasing
 		#im_out = cv2.resize(im_out, (0,0), fx=1.0, fy=1.0, interpolation = cv2.INTER_AREA)
 
@@ -243,6 +315,7 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		#Antialiasing/Gaussian blur added to whole image
 		blur = cv2.GaussianBlur(im_out,(5,5),0)
+
 
 		#Save image to wanted directory
 		#cv2.imwrite(filename+str(i)+'.jpg',im_out)
