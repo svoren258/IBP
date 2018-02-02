@@ -129,8 +129,8 @@ for root, dirs, files in os.walk(path_to_rz):
 
 		im_src = cv2.imread(path_to_rz+file_name,1)
 		
-		#tmp = random.choice(my_filenames)
-		tmp = '047.jpg'
+		tmp = random.choice(my_filenames)
+		#tmp = '047.jpg'
 		print (tmp)
 		im_dst = cv2.imread(path_to_tmp+tmp,1)
 
