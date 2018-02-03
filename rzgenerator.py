@@ -80,7 +80,7 @@ for root, dirs, files in os.walk(source):
 
 for i in range(int(inputnum)):
 #char_img_w, char_img_h = char_img.size
-	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_new.png', 'r')
+	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_new2.png', 'r')
 	#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 	#bg_w, bg_h = background.size
 	stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek2.png', 'r')

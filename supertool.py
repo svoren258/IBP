@@ -14,15 +14,14 @@ import json
 from matplotlib import pyplot as plt
 from PIL import Image
 
-coordinates_x = []
-coordinates_y = []
+# coordinates_x = []
+# coordinates_y = []
 # path_to_dst = ''
 # path_to_src = ''
 
 path_to_tmp = 'photo_templates_front2/'
 path_to_rz = 'RZ/'
 path_to_output = 'final/'
-my_filenames = []
 
 def argparse(argv):
 	global path_to_tmp
@@ -47,8 +46,6 @@ def argparse(argv):
 	print ('Path to templates: ', path_to_tmp)
 	print ('Path to rz: ', path_to_rz)
 	print ('Path to output: ', path_to_output)
-
-argparse(sys.argv[1:])
 
 def showImage(image, name='img'):
 	cv2.imshow(name,image)
@@ -97,239 +94,285 @@ def rgbChangeVal(min, max, image):
 	return image
     
     
-i = 0
 
-filename = path_to_output
-if not os.path.exists(os.path.dirname(filename)):
-    try:
-        os.makedirs(os.path.dirname(filename))
-    except OSError as exc: # Guard against race condition
-        if exc.errno != errno.EEXIST:
-            raise
+def createOutputDir():
+	filename = path_to_output
+	if not os.path.exists(os.path.dirname(filename)):
+	    try:
+	        os.makedirs(os.path.dirname(filename))
+	    except OSError as exc: # Guard against race condition
+	        if exc.errno != errno.EEXIST:
+	            raise
 
-for root, dirs, files in os.walk(path_to_tmp):
-	for tmp_name in files:
-		if tmp_name.endswith('.txt'):
-			continue
-		my_filenames.append(tmp_name)
-		#my_filenames = sorted(my_filenames)
+	return filename
 
+def createTemplates():
+	my_filenames = []
+	for root, dirs, files in os.walk(path_to_tmp):
+		for tmp_name in files:
+			if tmp_name.endswith('.txt'):
+				continue
+			my_filenames.append(tmp_name)
+			#my_filenames = sorted(my_filenames)
+	return my_filenames
 
-for root, dirs, files in os.walk(path_to_rz):
-	for file_name in files:
-		if file_name.endswith('.txt'):
-			continue
+def getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y):
+	file = open(path_to_tmp + tmp + '.txt','r')
+	points = file.read()
+	#print points
+	points = ast.literal_eval(points)
+	#print points
+	for point in points:
+		coordinates.append(point)
+		coordinates_x.append(point[0])
+		coordinates_y.append(point[1])
 
-		# #PIL version
-		# tmp = random.choice(my_filenames)
-		# im = Image.open(path_to_tmp+tmp)
-		# hist = Image.histogram(im)
-		# print hist
-		############
+	pts_dst = np.vstack(points).astype(float)
 
-		im_src = cv2.imread(path_to_rz+file_name,1)
-		
-		tmp = random.choice(my_filenames)
-		#tmp = '047.jpg'
-		print (tmp)
-		im_dst = cv2.imread(path_to_tmp+tmp,1)
+	return pts_dst
 
-		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25, interpolation = cv2.INTER_AREA)
+def createJson(file_name, coordinates, outputDir, i):
+	#open txt file with registration number and add max and min x and y coordinates and save in final directory as 00x.jpg.txt
+	txtfile = open(path_to_rz + file_name + '.txt','r')
+	reg_num = txtfile.readline()
+	txtfile.close()
 
-		coordinates = []
-		coordinates_x = []
-		coordinates_y = []
+	data = {
+		'lp_text' : reg_num,
+		'point0' : coordinates[0],
+		'point1' : coordinates[1],
+		'point2' : coordinates[2],
+		'point3' : coordinates[3]
+	}
 
-		i += 1
+	json_string = json.dumps(data, sort_keys=True)
+	json_file = open(outputDir+str(i)+'.jpg.json','w')
+	json_file.write(json_string)
+	json_file.close()
 
-		file = open(path_to_tmp + tmp + '.txt','r')
-		points = file.read()
-		#print points
-		points = ast.literal_eval(points)
-		#print points
-		for point in points:
-			coordinates.append(point)
-			coordinates_x.append(point[0])
-			coordinates_y.append(point[1])
+def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinates_y):
 
-		#print coordinates
-		
-		#Changing the RGB channel values according to the intensity of grayscale image
-		#The area, we are looking for in original image		
-		im_rgb = im_dst[int(min(coordinates_y)):int(max(coordinates_y)), int(min(coordinates_x)):int(max(coordinates_x))]
+	# Find homography
+	h, status = cv2.findHomography(pts_src, pts_dst)
 
-		# the area of the image with the largest intensity value
-		gray = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2GRAY)
-		(minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)
+	# Warp source image
+	#im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)
+	im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)#, borderMode=cv2.BORDER_TRANSPARENT)
+	
 
-		# black and white values, 10% from smallest and greatest value (minVal, maxVal)
-		interval = (maxVal - minVal)
-		percentil = int(interval / 10)
-		white_num = minVal + percentil
-		black_num = maxVal - percentil
+	# Get Perspective transformation matrix
+	# pts_dst_array = np.array([[358,253],[674,348],[660,400],[363,307]],np.float32)
+	# pts_src_array = np.array([[0,0],[1559,0],[1559,329],[0,329]],np.float32)
 
+	# Another function to findHomography()
+	#perspectiveMatrix = cv2.getPerspectiveTransform(pts_src_array, pts_dst_array)
+	
+	# print perspectiveMatrix
+	# im_perspective = cv2.warpPerspective(im_src, perspectiveMatrix, (im_dst.shape[1],im_dst.shape[0]), flags=cv2.INTER_LINEAR)
+	#showImage(im_perspective)
 
-		#HSV - hue, saturation, value
-		# x = cv2.merge([np.uint8([90]), np.uint8([90]), np.uint8([90])])
-		# res = cv2.add(im_src,x)
+	# Black out polygonal area in destination image.
+	cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
 
-		# hsv = cv2.cvtColor(im_src, cv2.COLOR_BGR2HSV)
-		# showImage(hsv)
-		# h, s, v = cv2.split(hsv)
-		# v -= 50
-		# darker = cv2.merge((h, s, v))
-		# # #back to RGB
-		# res = cv2.cvtColor(darker, cv2.COLOR_HSV2BGR)
-		# showImage(res)
+	# ANTIALIASING to im_temp
 
+	#showImage(im_temp, 'temp1')
 
-		# height, width = im_src.shape[:2]
-		# print(height, width)
-		# for y in range(0,height-1):
-		# 	for x in range(0,width-1):
-		# 		im_src[y,x] -= 150
-		# showImage(im_src)
-		#showImage(im_src)
+	#showImage(im_dst)
 
-		#########################################################
-		
-		im_src = rgbChangeVal(50,200,im_src)
-		#showImage(im_src)
-      
-		
-		#dst = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
-		#im_src = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
-		#im_src = cv2.GaussianBlur(dst,(5,5),0)
+	# Add warped source image to destination image.
+	im_out = im_dst + im_temp
 
-		#GAUSSIAN NOISE
-		# row,col,ch = im_src.shape
-		# mean = 0
-		# var = 0.1
-		# sigma = var**0.5
-		# gauss = np.random.normal(mean,sigma,(row,col,ch))
-		# gauss = gauss.reshape(row,col,ch)
-		# im_src = im_src + gauss
-		###########################################################
+	#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_AREA)
+	#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_LINEAR)
+	#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_CUBIC)
 
-		#Histogram 
-		# color = ('b','g','r')
-		# for j,col in enumerate(color):
-		# 	histr = cv2.calcHist([im_rgb],[j],None,[256],[0,256])
-		# 	plt.plot(histr,color = col)
-		# 	plt.xlim([0,256])
-		# plt.show()
-		############
+	#showImage(im_out,'im_out')
+	#showImage(im_out_linear,'im_linear')
+	#showImage(im_out_cubic,'im_cubic')
+	
+	#Resize image to wanted size
+	im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+	#im_out = im_out[int(0.75*0.8*min(coordinates_y)):int(0.75*1.2*max(coordinates_y)), int(0.75*0.8*min(coordinates_x)):int(0.75*1.2*max(coordinates_x))]
+	return im_out
 
-		pts_dst = np.vstack(points).astype(float)
+def getDestinationImage(tmp):
+	im_dst = cv2.imread(path_to_tmp+tmp,1)
+	im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25, interpolation = cv2.INTER_AREA)
+	return im_dst
 
-		# Small registration number - antialiasing
-		im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
+def getSourceImage(file_name):
 
-        #Application of Gaussian noise
-		im_src = add_gaussian_noise(im_src)
-		#showImage(im_src)
+	im_src = cv2.imread(path_to_rz+file_name,1)
 
-		size = im_src.shape
+	# Changing RGB channel maximum and minimum value
+	im_src = rgbChangeVal(50,200,im_src)
 
-		pts_src = np.array(
-				           [
-				            [0,0],
-				            [size[1] - 1, 0],
-				            [size[1] - 1, size[0] -1],
-				            [0, size[0] - 1 ]
-				            ],dtype=float
-				           );
+	#showImage(im_src,'src')
+	#showImage(im_src)
+  
+	#dst = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
+	#im_src = cv2.fastNlMeansDenoisingColored(im_src,None,10,10,7,21)
+	#im_src = cv2.GaussianBlur(dst,(5,5),0)
 
-		# Find homography
-		h, status = cv2.findHomography(pts_src, pts_dst)
+	#GAUSSIAN NOISE
+	# row,col,ch = im_src.shape
+	# mean = 0
+	# var = 0.1
+	# sigma = var**0.5
+	# gauss = np.random.normal(mean,sigma,(row,col,ch))
+	# gauss = gauss.reshape(row,col,ch)
+	# im_src = im_src + gauss
+	###########################################################
 
-		# Warp source image
-		#im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)
-		im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)#, borderMode=cv2.BORDER_TRANSPARENT)
-		
+	#Histogram 
+	# color = ('b','g','r')
+	# for j,col in enumerate(color):
+	# 	histr = cv2.calcHist([im_rgb],[j],None,[256],[0,256])
+	# 	plt.plot(histr,color = col)
+	# 	plt.xlim([0,256])
+	# plt.show()
+	############
 
-		# Get Perspective transformation matrix
-		# pts_dst_array = np.array([[358,253],[674,348],[660,400],[363,307]],np.float32)
-		# pts_src_array = np.array([[0,0],[1559,0],[1559,329],[0,329]],np.float32)
+	# pts_dst = np.vstack(points).astype(float)
 
-		# Another function to findHomography()
-		#perspectiveMatrix = cv2.getPerspectiveTransform(pts_src_array, pts_dst_array)
-		
-		# print perspectiveMatrix
-		# im_perspective = cv2.warpPerspective(im_src, perspectiveMatrix, (im_dst.shape[1],im_dst.shape[0]), flags=cv2.INTER_LINEAR)
-		#showImage(im_perspective)
+	# Resize registration number to apply antialiasing
+	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
-		# Black out polygonal area in destination image.
-		cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
+	#showImage(im_src, 'src')
 
-		# ANTIALIASING to im_temp
+	im_src = cv2.fastNlMeansDenoisingColored(im_src,None,8,8,7,21)
 
-		#showImage(im_temp, 'temp1')
+	#showImage(im_src, 'src')
 
-		#showImage(im_dst)
+    #Application of Gaussian noise
+	im_src = add_gaussian_noise(im_src)
 
-		# Add warped source image to destination image.
-		im_out = im_dst + im_temp
+	#showImage(im_src, 'src')
+	#showImage(im_src)
+	return im_src
 
-		#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_AREA)
-		#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_LINEAR)
-		#im_out = cv2.resize(im_out, (0,0), fx=0.75, fy=0.75, interpolation = cv2.INTER_CUBIC)
+def getSourcePoints(im_src):
+	size = im_src.shape
 
-		#showImage(im_out,'im_out')
-		#showImage(im_out_linear,'im_linear')
-		#showImage(im_out_cubic,'im_cubic')
-		
-		#Resize image to wanted size
-		im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
-		#im_out = im_out[int(0.75*0.8*min(coordinates_y)):int(0.75*1.2*max(coordinates_y)), int(0.75*0.8*min(coordinates_x)):int(0.75*1.2*max(coordinates_x))]
+	# Getting source image points
+	pts_src = np.array(
+			           [
+			            [0,0],
+			            [size[1] - 1, 0],
+			            [size[1] - 1, size[0] -1],
+			            [0, size[0] - 1 ]
+			            ],dtype=float
+			           );
+	return pts_src
 
-		#showImage(im_out)
-		# textdir = path_to_rz
-		# if not os.path.exists(os.path.dirname(textdir)):
-		#     try:
-		#         os.makedirs(os.path.dirname(textdir))
-		#     except OSError as exc: # Guard against race condition
-		#         if exc.errno != errno.EEXIST:
-		#             raise
-		
-		#Antialiasing
-		#im_out = cv2.resize(im_out, (0,0), fx=1.0, fy=1.0, interpolation = cv2.INTER_AREA)
+def main():
+	i = 1
+	coordinates = []
+	coordinates_x = []
+	coordinates_y = []
 
-		#open txt file with registration number and add max and min x and y coordinates and save in final directory as 00x.jpg.txt
-		txtfile = open(path_to_rz + file_name + '.txt','r')
-		reg_num = txtfile.readline()
-		txtfile.close()
+	argparse(sys.argv[1:])
+	outputDir = createOutputDir()
+	templates = createTemplates()
+	#i = 0
+	for root, dirs, files in os.walk(path_to_rz):
+		for file_name in files:
+			if file_name.endswith('.txt'):
+				continue
 
-		data = {
-			'lp_text' : reg_num,
-			'point0' : coordinates[0],
-			'point1' : coordinates[1],
-			'point2' : coordinates[2],
-			'point3' : coordinates[3]
-		}
+			# #PIL version
+			# tmp = random.choice(my_filenames)
+			# im = Image.open(path_to_tmp+tmp)
+			# hist = Image.histogram(im)
+			# print hist
+			############
+			im_src = getSourceImage(file_name)
 
-		json_string = json.dumps(data, sort_keys=True)
-		json_file = open(filename+str(i)+'.jpg.json','w')
-		json_file.write(json_string)
-		json_file.close()
+			#showImage(im_src,'src')
 
-		#Antialiasing/Gaussian blur added to whole image
-		blur = cv2.GaussianBlur(im_out,(5,5),0)
+			pts_src = getSourcePoints(im_src)
 
+			tmp = random.choice(templates)
+			#tmp = '047.jpg'
+			print(tmp)
 
-		#Save image to wanted directory
-		#cv2.imwrite(filename+str(i)+'.jpg',im_out)
-		cv2.imwrite(filename+str(i)+'.jpg',blur)
+			#i += 1
+			im_dst = getDestinationImage(tmp)
 
+			pts_dst = getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y)
+			
+			#print coordinates
+			
+			#Changing the RGB channel values according to the intensity of grayscale image
+			#The area, we are looking for in original image		
+			# im_rgb = im_dst[int(min(coordinates_y)):int(max(coordinates_y)), int(min(coordinates_x)):int(max(coordinates_x))]
 
-		#PIL variant of ANTIALIASING
-		# im = Image.open(filename+str(i)+'.jpg')
-		# width,height = im.size
-		# out = im.resize((width, height), Image.ANTIALIAS)
-		# out.save(filename+str(i)+'_PIL'+'.jpg', quality=100)
+			# # the area of the image with the largest intensity value
+			# gray = cv2.cvtColor(im_rgb, cv2.COLOR_BGR2GRAY)
+			# (minVal, maxVal, minLoc, maxLoc) = cv2.minMaxLoc(gray)
 
+			# # black and white values, 10% from smallest and greatest value (minVal, maxVal)
+			# interval = (maxVal - minVal)
+			# percentil = int(interval / 10)
+			# white_num = minVal + percentil
+			# black_num = maxVal - percentil
 
-	############################################################################################################
+			#HSV - hue, saturation, value
+			# x = cv2.merge([np.uint8([90]), np.uint8([90]), np.uint8([90])])
+			# res = cv2.add(im_src,x)
+
+			# hsv = cv2.cvtColor(im_src, cv2.COLOR_BGR2HSV)
+			# showImage(hsv)
+			# h, s, v = cv2.split(hsv)
+			# v -= 50
+			# darker = cv2.merge((h, s, v))
+			# # #back to RGB
+			# res = cv2.cvtColor(darker, cv2.COLOR_HSV2BGR)
+			# showImage(res)
+
+			# height, width = im_src.shape[:2]
+			# print(height, width)
+			# for y in range(0,height-1):
+			# 	for x in range(0,width-1):
+			# 		im_src[y,x] -= 150
+			# showImage(im_src)
+			#showImage(im_src)
+
+			#########################################################
+			
+			im_out = createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinates_y)			
+
+			#showImage(im_out)
+			# textdir = path_to_rz
+			# if not os.path.exists(os.path.dirname(textdir)):
+			#     try:
+			#         os.makedirs(os.path.dirname(textdir))
+			#     except OSError as exc: # Guard against race condition
+			#         if exc.errno != errno.EEXIST:
+			#             raise
+			
+			#Antialiasing
+			#im_out = cv2.resize(im_out, (0,0), fx=1.0, fy=1.0, interpolation = cv2.INTER_AREA)
+
+			#Antialiasing/Gaussian blur added to whole image
+			blured_out = cv2.GaussianBlur(im_out,(5,5),0)
+
+			createJson(file_name, coordinates, outputDir, i)
+
+			#Save image to wanted directory
+			#cv2.imwrite(filename+str(i)+'.jpg',im_out)
+			cv2.imwrite(outputDir+str(i)+'.jpg',blured_out)
+
+			i += 1
+			#PIL variant of ANTIALIASING
+			# im = Image.open(filename+str(i)+'.jpg')
+			# width,height = im.size
+			# out = im.resize((width, height), Image.ANTIALIAS)
+			# out.save(filename+str(i)+'_PIL'+'.jpg', quality=100)
+main()
+
+############################################################################################################
 
 
 # for root, dirs, files in os.walk(path_to_tmp):
