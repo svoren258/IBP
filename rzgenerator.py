@@ -48,17 +48,18 @@ argparse(sys.argv[1:])
 def generate_char(offset, images, nation):
 	character = random.choice(images)
 	regex = r"([A-Z].png)"
+	regex2 = r"(A|B|C|E|H|J|K|L|M|P|S|T|U|Z.png)"
 
 	if (nation == 'cz'):
 		if offset == (205,53) and character[1] == '0.png':
-			character = generate_char(offset, images)
+			character = generate_char(offset, images, nation)
 			return character
 		
 		# if offset == (185, 20) and re.search(regex,character[1]):
 		# 	character = generate_char(offset, images)
 
 		# else:
-		if offset == (358,53) and not re.search(regex,character[1]):
+		if offset == (358,53) and not re.search(regex2,character[1]):
 			character = generate_char(offset, images, nation)
 			
 		for num_offset in [(205,53),(854,53),(1007,53),(1160,53),(1313,53)]:
@@ -118,7 +119,7 @@ for i in range(int(inputnum)):
 	if (nation == 'sk'):
 		background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_final2.png', 'r')
 		sign_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/znak_final.png','r')
-		sign_img_offset = (520,100)
+		sign_img_offset = (524,100)
 		background.paste(sign_img, sign_img_offset)
 		offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
 		characters += addDistrict((196,40), (366,40), background, source)
