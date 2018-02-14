@@ -117,7 +117,7 @@ for root, dirs, files in os.walk(source):
 for i in range(int(inputnum)):
 #char_img_w, char_img_h = char_img.size
 	if (nation == 'sk'):
-		background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_final2.png', 'r')
+		background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_final4.png', 'r')
 		sign_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/znak_final.png','r')
 		sign_img_offset = (524,100)
 		background.paste(sign_img, sign_img_offset)
@@ -125,7 +125,7 @@ for i in range(int(inputnum)):
 		characters += addDistrict((196,40), (366,40), background, source)
 
 	elif (nation == 'cz'):	
-		background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_new2.png', 'r')
+		background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_new4.png', 'r')
 	#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 	#bg_w, bg_h = background.size
 
