@@ -204,9 +204,21 @@ def getDestinationImage(tmp):
 def getSourceImage(file_name):
 
 	im_src = cv2.imread(path_to_rz+file_name,1)
+	im_hsv = cv2.cvtColor(im_src, cv2.COLOR_BGR2HSV)
+
+	# Brightness and contrast changing	
+	for x in range(0, len(im_hsv)):
+		for y in range(0, len(im_hsv[0])):
+			im_hsv[x,y][2] *= 0.675
+
+	im_src = cv2.cvtColor(im_hsv, cv2.COLOR_HSV2BGR)
+
+	# showImage(im_src, "img")
+
+	# print height, width, channels
 
 	# Changing RGB channel maximum and minimum value
-	im_src = rgbChangeVal(50,200,im_src)
+	# im_src = rgbChangeVal(50,200,im_src)
 
 	#showImage(im_src,'src')
 	#showImage(im_src)
@@ -239,17 +251,16 @@ def getSourceImage(file_name):
 	# Resize registration number to apply antialiasing
 	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
-	#showImage(im_src, 'src')
+	# showImage(im_src, 'src')
 
 	im_src = cv2.fastNlMeansDenoisingColored(im_src,None,8,8,7,21)
 
-	#showImage(im_src, 'src')
+	# showImage(im_src, 'src')
 
     #Application of Gaussian noise
 	im_src = add_gaussian_noise(im_src)
 
-	#showImage(im_src, 'src')
-	#showImage(im_src)
+	# showImage(im_src, "image")
 	return im_src
 
 def getSourcePoints(im_src):

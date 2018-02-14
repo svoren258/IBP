@@ -126,7 +126,7 @@ def main():
 		#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
 		#bg_w, bg_h = background.size
 
-			stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek2.png', 'r')
+			stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek7.png', 'r')
 			stk_layout_offset = (681,41) #(681,53)
 			background.paste(stk_layout_img, stk_layout_offset)
 
