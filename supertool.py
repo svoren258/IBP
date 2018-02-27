@@ -121,14 +121,12 @@ def getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y):
 	points = file.read()
 	#print points
 	points = ast.literal_eval(points)
-	#print points
 	for point in points:
 		coordinates.append(point)
 		coordinates_x.append(point[0])
 		coordinates_y.append(point[1])
 
 	pts_dst = np.vstack(points).astype(float)
-
 	return pts_dst
 
 def createJson(file_name, coordinates, outputDir, i):
@@ -149,6 +147,22 @@ def createJson(file_name, coordinates, outputDir, i):
 	json_file = open(outputDir+str(i)+'.jpg.json','w')
 	json_file.write(json_string)
 	json_file.close()
+
+def getFinalCoords(coordinates_x, coordinates_y):
+	new_coords_x = []
+	new_coords_y = []
+
+	for x in coordinates_x:
+		x = x - (int(0.8*min(coordinates_x)))
+		new_coords_x.append(x)
+	
+	for y in coordinates_y:
+		y = y - (int(0.8*min(coordinates_y)))
+		new_coords_y.append(y)
+
+	final_coords = [[new_coords_y[0],new_coords_x[0]],[new_coords_y[1],new_coords_x[1]],[new_coords_y[2],new_coords_x[2]],[new_coords_y[3],new_coords_x[3]]]
+
+	return final_coords
 
 def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinates_y):
 
@@ -190,11 +204,12 @@ def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinat
 	#showImage(im_out,'im_out')
 	#showImage(im_out_linear,'im_linear')
 	#showImage(im_out_cubic,'im_cubic')
-	
+
 	#Resize image to wanted size
-	im_out = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+	output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
 	#im_out = im_out[int(0.75*0.8*min(coordinates_y)):int(0.75*1.2*max(coordinates_y)), int(0.75*0.8*min(coordinates_x)):int(0.75*1.2*max(coordinates_x))]
-	return im_out
+	
+	return output_img
 
 def getDestinationImage(tmp):
 	im_dst = cv2.imread(path_to_tmp+tmp,1)
@@ -279,6 +294,7 @@ def getSourcePoints(im_src):
 
 def main():
 	i = 1
+	final_coords = []
 	coordinates = []
 	coordinates_x = []
 	coordinates_y = []
@@ -310,6 +326,7 @@ def main():
 
 			#i += 1
 			im_dst = getDestinationImage(tmp)
+
 
 			pts_dst = getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y)
 			
@@ -354,6 +371,7 @@ def main():
 			
 			im_out = createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinates_y)			
 
+			final_coords = getFinalCoords(coordinates_x, coordinates_y)
 			#showImage(im_out)
 			# textdir = path_to_rz
 			# if not os.path.exists(os.path.dirname(textdir)):
@@ -369,7 +387,11 @@ def main():
 			#Antialiasing/Gaussian blur added to whole image
 			blured_out = cv2.GaussianBlur(im_out,(5,5),0)
 
-			createJson(file_name, coordinates, outputDir, i)
+			createJson(file_name, final_coords, outputDir, i)
+
+			coordinates_x = []
+			coordinates_y = []
+			coordinates = []
 
 			#Save image to wanted directory
 			#cv2.imwrite(filename+str(i)+'.jpg',im_out)
