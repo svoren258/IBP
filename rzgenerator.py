@@ -135,15 +135,15 @@ def main():
 
 			#STK
 			if i % 2 == 0:
-				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk3.png','r')
-				stk_offset = (673,45) #(680,58)
-				background.paste(stk_img, stk_offset)
+				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk7.png','r')
+				stk_offset = (693,63) #(680,58)
+				background.paste(stk_img, stk_offset, stk_img)
 
-			# #EK
-			# if i % 4 == 0:
-			# 	ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
-			# 	ek_offset = (680,183)
-			# 	background.paste(ek_img, ek_offset)
+			#EK
+			if i % 4 == 0:
+				ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
+				ek_offset = (695,188)
+				background.paste(ek_img, ek_offset, ek_img)
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
@@ -194,7 +194,7 @@ def main():
 		            raise
 
 		txtfile = open(textdir + 'rz' + str(i) + '.png.txt','w')
-		txtfile.write(str(characters))
+		txtfile.write(str(characters)+ ' ' + nation)
 		txtfile.close()
 		background.save(outputdir + 'rz' + str(i) + '.png')
 main()

@@ -133,10 +133,12 @@ def createJson(file_name, coordinates, outputDir, i):
 	#open txt file with registration number and add max and min x and y coordinates and save in final directory as 00x.jpg.txt
 	txtfile = open(path_to_rz + file_name + '.txt','r')
 	reg_num = txtfile.readline()
+	info = reg_num.split()
 	txtfile.close()
 
 	data = {
-		'lp_text' : reg_num,
+		'lp_text' : info[0],
+		'nation' : info[1],
 		'point0' : coordinates[0],
 		'point1' : coordinates[1],
 		'point2' : coordinates[2],
