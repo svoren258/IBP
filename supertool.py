@@ -207,12 +207,12 @@ def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinat
 	#showImage(im_out_linear,'im_linear')
 	#showImage(im_out_cubic,'im_cubic')
 
-	return im_out
+	#return im_out
 	#Resize image to wanted size
-	#output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+	output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
 	#im_out = im_out[int(0.75*0.8*min(coordinates_y)):int(0.75*1.2*max(coordinates_y)), int(0.75*0.8*min(coordinates_x)):int(0.75*1.2*max(coordinates_x))]
 	
-	#return output_img
+	return output_img
 
 def getDestinationImage(tmp):
 	im_dst = cv2.imread(path_to_tmp+tmp,1)

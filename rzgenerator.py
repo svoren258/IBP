@@ -131,17 +131,17 @@ def main():
 			stk_layout_offset = (681,41) #(681,53)
 			background.paste(stk_layout_img, stk_layout_offset)
 
-			# #STK
-			# if i % 2 == 0:
-			# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk7.png','r')
-			# 	stk_offset = (693,63) #(680,58)
-			# 	background.paste(stk_img, stk_offset, stk_img)
+			#STK
+			if i % 2 == 0:
+				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk7.png','r')
+				stk_offset = (693,63) #(680,58)
+				background.paste(stk_img, stk_offset, stk_img)
 
-			# #EK
-			# if i % 4 == 0:
-			# 	ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
-			# 	ek_offset = (695,188)
-			# 	background.paste(ek_img, ek_offset, ek_img)
+			#EK
+			if i % 4 == 0:
+				ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
+				ek_offset = (695,188)
+				background.paste(ek_img, ek_offset, ek_img)
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
