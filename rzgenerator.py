@@ -78,22 +78,20 @@ def generate_char(offset, images, nation):
 	return character
 
 def addDistrict(offset1, offset2, background, source):
-	# sk_shortcuts = ['BA','BL','BB','BJ','BN','BR',
-	# 				'BS','BY','CA','DK','DS','DT',
-	# 				'GA','GL','HC','HE','IL','KA',
-	# 				'KE','KK','KM','KN','KS','LC',
-	# 				'LE','LM','LV','MA','MI','ML',
-	# 				'MT','MY','NR','NM','NO','NZ',
-	# 				'PB','PD','PE','PK','PN','PO',
-	# 				'PP','PT','PU','RA','RK','RS',
-	# 				'RV','SA','SB','SC','SE','SI',
-	# 				'SK','SL','SN','SO','SP','SV',
-	# 				'TT','TN','TO','TR','TS','TV',
-	# 				'VK','VT','ZA','ZC','ZH','ZM','ZV']
+	sk_shortcuts = ['BA','BL','BB','BJ','BN','BR',
+					'BS','BY','CA','DK','DS','DT',
+					'GA','GL','HC','HE','IL','KA',
+					'KE','KK','KM','KN','KS','LC',
+					'LE','LM','LV','MA','MI','ML',
+					'MT','MY','NR','NM','NO','NZ',
+					'PB','PD','PE','PK','PN','PO',
+					'PP','PT','PU','RA','RK','RS',
+					'RV','SA','SB','SC','SE','SI',
+					'SK','SL','SN','SO','SP','SV',
+					'TT','TN','TO','TR','TS','TV',
+					'VK','VT','ZA','ZC','ZH','ZM','ZV']
 
-	sk_shortcuts = ['BA','MI','NM','MT','ML','KM','KA','MA','PO','KK','NO','PT','PP','TO','TN','TT','KN','KE','BJ','GL','LE','BN','BB','BL','PB']
-	rand = random.randint(0, 24)
-	#rand = random.randint(0,72)
+	rand = random.randint(0,72)
 	background.paste(Image.open(source+sk_shortcuts[rand][0]+'.png'),offset1)
 	background.paste(Image.open(source+sk_shortcuts[rand][1]+'.png'),offset2)
 	return sk_shortcuts[rand]
@@ -133,17 +131,17 @@ def main():
 			stk_layout_offset = (681,41) #(681,53)
 			background.paste(stk_layout_img, stk_layout_offset)
 
-			#STK
-			if i % 2 == 0:
-				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk7.png','r')
-				stk_offset = (693,63) #(680,58)
-				background.paste(stk_img, stk_offset, stk_img)
+			# #STK
+			# if i % 2 == 0:
+			# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk7.png','r')
+			# 	stk_offset = (693,63) #(680,58)
+			# 	background.paste(stk_img, stk_offset, stk_img)
 
-			#EK
-			if i % 4 == 0:
-				ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
-				ek_offset = (695,188)
-				background.paste(ek_img, ek_offset, ek_img)
+			# #EK
+			# if i % 4 == 0:
+			# 	ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
+			# 	ek_offset = (695,188)
+			# 	background.paste(ek_img, ek_offset, ek_img)
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
