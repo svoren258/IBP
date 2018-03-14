@@ -295,6 +295,21 @@ def getSourcePoints(im_src):
 			           );
 	return pts_src
 
+def applyMotionBlur(image):
+
+	size = 15
+
+	# generating the kernel
+	kernel_motion_blur = np.zeros((size, size))
+	kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
+	kernel_motion_blur = kernel_motion_blur / size
+
+	# applying the kernel to the input image
+	output = cv2.filter2D(image, -1, kernel_motion_blur)
+
+	return output
+
+
 def main():
 	i = 1
 	final_coords = []
@@ -390,6 +405,9 @@ def main():
 			#Antialiasing/Gaussian blur added to whole image
 			blured_out = cv2.GaussianBlur(im_out,(5,5),0)
 
+			# Applying motion blur on whole image
+			# output_img = applyMotionBlur(blured_out)
+
 			createJson(file_name, final_coords, outputDir, i)
 
 			coordinates_x = []
@@ -398,7 +416,7 @@ def main():
 
 			#Save image to wanted directory
 			#cv2.imwrite(filename+str(i)+'.jpg',im_out)
-			cv2.imwrite(outputDir+str(i)+'.jpg',blured_out)
+			cv2.imwrite(outputDir+str(i)+'.jpg', blured_out)
 
 			i += 1
 			#PIL variant of ANTIALIASING
