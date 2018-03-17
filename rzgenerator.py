@@ -1,4 +1,11 @@
 #!/usr/bin/python
+# -*- coding: utf-8 -*-
+
+# Author: Ondrej Svoreň, 3 BIT
+# Subject: IBP - Bachelor Thesis
+# Thesis Name: Synthetic Dataset Generator for Traffic Analysis
+# Supervisor: prof. Ing. Adam Herout PhD.
+# School Year: 2017/18
 
 import numpy as np
 import io
@@ -14,10 +21,10 @@ from PIL import Image
 
 inputnum = 0
 outputdir = '../../RZ/'
-#characters = []
 nation = ''
 characters = ''
 
+# Argument parser
 def argparse(argv):
 	global inputnum
 	global outputdir
@@ -25,11 +32,16 @@ def argparse(argv):
 	try:
 		opts, args = getopt.getopt(argv,"hi:o:t:")
 	except getopt.GetoptError:
-		print 'Usage: python rzgenerator.py -i [number] -o [output_dir_path] -t [nation]'
+		print 'Usage: python rzgenerator.py -i [amount] -o [output_dir_path] -t [nationality_shortcut]'
 		sys.exit(2)
 	for opt, arg in opts:
 		if opt == '-h':
-			print 'Usage: python rzgenerator.py -i [number] -o [output_dir_path] -t [nation]'
+			print (
+				'Usage: python rzgenerator.py -i [amount] -o [output_dir_path] -t [nationality_shortcut]\n'
+				'	Application generates certain amount (first input argument) of czech or slovak license plates\n'
+				' 	(according to nationality shortcut - cz/sk as third input argument) and saves them to output directiory,\n'
+				'	which path is specified by second input argument argument (\'RZ/\' by default).'
+				)
 			sys.exit()
 		elif opt in ("-i"):
 			inputnum = arg
@@ -38,12 +50,12 @@ def argparse(argv):
 		elif opt in ("-t"):
 			nation = arg
 
-	print 'Input num is: ', inputnum
-	print 'Output dir is: ', outputdir
-	print 'Nation: ', nation
+	print 'Amount: ', inputnum
+	print 'Output directoty path: ', outputdir
+	print 'Nationality shortcut: ', nation
 
 
-#function definitions
+# Function returns character according to czech or slovak license number rules 
 def generate_char(offset, images, nation):
 	character = random.choice(images)
 	regex = r"([A-Z].png)"
@@ -53,11 +65,7 @@ def generate_char(offset, images, nation):
 		if offset == (205,53) and character[1] == '0.png':
 			character = generate_char(offset, images, nation)
 			return character
-		
-		# if offset == (185, 20) and re.search(regex,character[1]):
-		# 	character = generate_char(offset, images)
 
-		# else:
 		if offset == (358,53) and not re.search(regex2,character[1]):
 			character = generate_char(offset, images, nation)
 			
@@ -65,7 +73,8 @@ def generate_char(offset, images, nation):
 			if offset == num_offset and re.search(regex,character[1]):
 				character = generate_char(offset, images, nation)
 				break
-	
+
+
 	elif (nation == 'sk'):
 		for num_offset in [(683,40),(853,40),(1023,40)]:
 			if offset == num_offset and re.search(regex,character[1]):
@@ -77,6 +86,7 @@ def generate_char(offset, images, nation):
 
 	return character
 
+# Function adds district shortcut in case of generating slovak license number
 def addDistrict(offset1, offset2, background, source):
 	sk_shortcuts = ['BA','BL','BB','BJ','BN','BR',
 					'BS','BY','CA','DK','DS','DT',
@@ -96,6 +106,7 @@ def addDistrict(offset1, offset2, background, source):
 	background.paste(Image.open(source+sk_shortcuts[rand][1]+'.png'),offset2)
 	return sk_shortcuts[rand]
 
+# Main function
 def main():
 	images = []
 	argparse(sys.argv[1:])
@@ -115,7 +126,7 @@ def main():
 	for i in range(int(inputnum)):
 		characters = ''
 		if (nation == 'sk'):
-			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_final4.png', 'r')
+			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_sk.png', 'r')
 			sign_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/znak.png','r')
 			sign_img_offset = (524,100)
 			background.paste(sign_img, sign_img_offset)
@@ -123,21 +134,19 @@ def main():
 			characters += addDistrict((196,40), (366,40), background, source)
 
 		elif (nation == 'cz'):	
-			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_new3.png', 'r')
-		#background = Image.new('RGBA', (1560, 330), (255, 255, 255, 255))
-		#bg_w, bg_h = background.size
+			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_cz.png', 'r')
 
-			stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek7.png', 'r')
+			stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek.png', 'r')
 			stk_layout_offset = (681,41) #(681,53)
 			background.paste(stk_layout_img, stk_layout_offset)
 
-			#STK
+			# STK
 			if i % 2 == 0:
-				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk7.png','r')
+				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk.png','r')
 				stk_offset = (693,63) #(680,58)
 				background.paste(stk_img, stk_offset, stk_img)
 
-			#EK
+			# EK
 			if i % 4 == 0:
 				ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
 				ek_offset = (695,188)
@@ -145,44 +154,12 @@ def main():
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
-		# a_img = Image.open('/home/svoren258/Dokumenty/myopencv/characters/0.png','r')
-		# for offset in offsets:
-		# 	background.paste(a_img, offset)
-
-		# for offset in offsets:
-		# 	if offset == (205,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/D.png', 'r')
-		# 		background.paste(char, offset)
-		# 	elif offset == (358,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/A.png', 'r')
-		# 		background.paste(char, offset)
-		# 	elif offset == (511,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/K.png', 'r')
-		# 		background.paste(char, offset)
-		# 	elif offset == (854,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/U.png', 'r')
-		# 		background.paste(char, offset)
-		# 	elif offset == (1007,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/J.png', 'r')
-		# 		background.paste(char, offset)
-		# 	elif offset == (1160,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/E.png', 'r')
-		# 		background.paste(char, offset)
-		# 	elif offset == (1313,53):
-		# 		char = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/characters/M.png', 'r')
-		# 		background.paste(char, offset)
-
 		for offset in offsets:
-			#print offset
-			#character = random.choice(images)
 			character = generate_char(offset, images, nation)
-
-			#characters.append(character[1][0])
 			characters += character[1][0]
-			#print character[1][0]
 			background.paste(character[0], offset)
 
-		#Saving registration nubmer
+		# Saving registration nubmer
 		textdir = outputdir
 		if not os.path.exists(os.path.dirname(textdir)):
 		    try:
@@ -191,6 +168,7 @@ def main():
 		        if exc.errno != errno.EEXIST:
 		            raise
 
+		# Creating .txt file that includes to license-plate number 
 		txtfile = open(textdir + 'rz' + str(i) + '.png.txt','w')
 		txtfile.write(str(characters)+ ' ' + nation)
 		txtfile.close()
