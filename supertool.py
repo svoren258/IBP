@@ -137,6 +137,20 @@ def createJson(file_name, coordinates, outputDir, i, gauss, motion):
 	json_file.write(json_string)
 	json_file.close()
 
+def changeBlckAndWhiteValues(im_src):
+	(B, G, R) = cv2.split(im_src)
+
+	R[R == 0] = 50
+	G[G == 0] = 50
+	B[B == 0] = 50
+
+	R[R == 255] = 240
+ 	G[G == 255] = 240
+ 	B[B == 255] = 240
+
+ 	im_src = cv2.merge([B, G, R])
+ 	return im_src
+
 # Function returns final coordinates of the license plate included in output image
 def getFinalCoords(coordinates_x, coordinates_y):
 	new_coords_x = []
@@ -198,6 +212,8 @@ def getSourceImage(file_name):
 	# Resize registration number to apply antialiasing
 	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
+	im_src = changeBlckAndWhiteValues(im_src)
+
 	im_src = cv2.fastNlMeansDenoisingColored(im_src,None,8,8,7,21)
 
     #Application of Gaussian noise
@@ -248,73 +264,6 @@ def applyMotionBlur(image):
 	output = cv2.filter2D(image, -1, kernel_motion_blur)
 
 	return output
-
-def warpImage(img):
-	rows, cols = img.shape[:2]
-
-	#####################
-	# Vertical wave
-
-	img_output = np.zeros(img.shape, dtype=img.dtype)
-
-	for i in range(rows):
-	    for j in range(cols):
-	        offset_x = int(25.0 * math.sin(2 * 3.14 * i / 180))
-	        offset_y = 0
-	        if j+offset_x < rows:
-	            img_output[i,j] = img[i,(j+offset_x)%cols]
-	        else:
-	            img_output[i,j] = 0
-
-	showImage(img, 'Input')
-	showImage(img_output, 'Vertical wave')
-
-	#####################
-	# Horizontal wave
-
-	img_output = np.zeros(img.shape, dtype=img.dtype)
-
-	for i in range(rows):
-	    for j in range(cols):
-	        offset_x = 0
-	        offset_y = int(16.0 * math.sin(2 * 3.14 * j / 150))
-	        if i+offset_y < rows:
-	            img_output[i,j] = img[(i+offset_y)%rows,j]
-	        else:
-	            img_output[i,j] = 0
-
-	showImage(img_output, 'Horizontal wave')
-
-	#####################
-	# Both horizontal and vertical 
-
-	img_output = np.zeros(img.shape, dtype=img.dtype)
-
-	for i in range(rows):
-	    for j in range(cols):
-	        offset_x = int(20.0 * math.sin(2 * 3.14 * i / 150))
-	        offset_y = int(20.0 * math.cos(2 * 3.14 * j / 150))
-	        if i+offset_y < rows and j+offset_x < cols:
-	            img_output[i,j] = img[(i+offset_y)%rows,(j+offset_x)%cols]
-	        else:
-	            img_output[i,j] = 0
-
-	showImage(img_output, 'Multidirectional wave')
-
-	#####################
-	# Concave effect
-
-	img_output = np.zeros(img.shape, dtype=img.dtype)
-
-	for i in range(rows):
-	    for j in range(cols):
-	        offset_x = int(128.0 * math.sin(2 * 3.14 * i / (2*cols)))
-	        offset_y = 0
-	        if j+offset_x < cols:
-	            img_output[i,j] = img[i,(j+offset_x)%cols]
-	        else:
-	            img_output[i,j] = 0
-
 
 # Main function
 def main():

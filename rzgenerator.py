@@ -217,12 +217,15 @@ def main():
 		elif (nation == 'pl'):
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/vzor_pl.png', 'r')
 			if (i % 2 == 0):
+				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(545,135))
 				characters += addDistrictPL((170,55),(348,55),0,background, source)
-				offsets = [(635,55),(805,55),(978,55),(1155,55),(1330,55)]
+				offsets = [(635,55),(805,55),(985,55),(1155,55),(1330,55)]
 			elif (i % 4 == 0):
+				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(715,135))
 				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
 				offsets = [(805,55),(978,55),(1155,55),(1330,55)]
 			else:
+				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(640,135))
 				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
 				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
 
