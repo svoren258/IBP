@@ -23,6 +23,7 @@ inputnum = 0
 outputdir = '../../RZ/'
 nation = ''
 characters = ''
+pl_spz = ''
 
 # Argument parser
 def argparse(argv):
@@ -57,9 +58,13 @@ def argparse(argv):
 
 # Function returns character according to czech or slovak license number rules 
 def generate_char(offset, images, nation):
+	global pl_spz
 	character = random.choice(images)
 	regex = r"([A-Z].png)"
 	regex2 = r"(A|B|C|E|H|J|K|L|M|P|S|T|U|Z.png)"
+
+	pl_typ1 = r"([0-9]*[A-Z]*[0-9]*)"
+	pl_typ2 = r"([A-Z]*[0-9]*[A-Z]*)"
 
 	if (nation == 'cz'):
 		if offset == (205,53) and character[1] == '0.png':
@@ -82,6 +87,15 @@ def generate_char(offset, images, nation):
 
 		for num_offset in [(1193,40),(1363,40)]:
 			if offset == num_offset and not re.search(regex,character[1]):
+				character = generate_char(offset, images, nation)
+
+
+	elif (nation == 'pl'):
+		previous = pl_spz
+		pl_spz += character[1][0]
+		if (len(pl_spz) != 0):	
+			if (not re.search(pl_typ1, pl_spz)):
+				pl_spz = previous
 				character = generate_char(offset, images, nation)
 
 	return character
@@ -205,9 +219,13 @@ def main():
 			if (i % 2 == 0):
 				characters += addDistrictPL((170,55),(348,55),0,background, source)
 				offsets = [(635,55),(805,55),(978,55),(1155,55),(1330,55)]
-			else:
+			elif (i % 4 == 0):
 				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
 				offsets = [(805,55),(978,55),(1155,55),(1330,55)]
+			else:
+				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
+				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
+
 
 		for offset in offsets:
 			character = generate_char(offset, images, nation)
