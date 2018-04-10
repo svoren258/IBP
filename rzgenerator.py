@@ -86,8 +86,51 @@ def generate_char(offset, images, nation):
 
 	return character
 
+# Function adds district shortcut in case of generating poland license number
+def addDistrictPL(offset1, offset2, offset3, background, source):
+	pl_shortcuts3 = ['ZSW','ZKA','ZPL','ZGL','ZLO','ZGY','ZKL','ZSL','ZKO','ZSZ','ZSD','ZDR','ZWA','ZCH','ZMY','ZPY','ZST',
+					 'ZGR','GSL','GBY','GLE','GWE','GPU','GSP','GND','GMB','GSZ','GKW','GTC','GST','GDA','GCH','GCZ','GBY',
+					 'GKS','NEB','NBR','NBA','NLI','NIL','NNM','NOS','NDZ','NOS','NOL','NNI','NSZ','NKE','NWE','NGO','NOE',
+					 'NEL','NPI','NGI','NMR','BSU','BSE','BAU','BGR','BKL','BSK','BMN','BLM','BZA','BWM','FSD','FGW','FSU',
+					 'FMI','FSL','FKR','FSW','FZA','FZG','FNW','FWS','PZL','PCT','PCH','PWA','POB','PSZ','PNT','POB','PWA',
+					 'PGN','POZ','PGO','PWL','PKS','PSE','PSR','PWR','PSL','PKN','PKO','PLE','PGS','PJA','PKL','PTU','PKA',
+					 'PPL','PRA','PKR','POS','POT','PKE','CSE','CTU','CSW','CBY','CNA','CGR','CWA','CBR','CRY','CZN','CMG',
+					 'CAL','CWL','CRA','WZU','WML','WPZ','WOS','WSE','WCI','WMA','WGS','WPL','WPN','WPU','WWY','WOR','WSC',
+					 'WND','WWL','WWE','WSK','WZY','WGM','WPR','WOT','WOT','WLS','WKZ','WBR','WPY','WSZ','WRA','WZW','LLU',
+					 'LRY','LRA','LPA','LLB','LWL','LPU','LLE','LOP','LUB','LSW','LKR','LKS','LCH','LJA','LZA','LHR','LBL',
+					 'LTM','DZG','DBL','DPL','DBL','DLB','DLE','DLU','DGL','DGR','DLW','DZL','DJA','DJE','DKA','DBA','DSR',
+					 'DWL','DTR','DSR','DSW','DWR','DOL','DOA','DST','DZA','DKL','DDZ','ONA','OKL','OOL','OPO','ONY','OPR',
+					 'OKR','OST','OGL','EKU','ELC','ELE','EPD','EZG','ESK','EBR','EZD','ELA','EPA','ELW','ETM','ERW','EOP',
+					 'ERA','EPJ','EWE','EBE','TKN','TLW','TSK','TST','TOS','TOP','TSA','TSZ','TBU','TKA','TJE','SKL','SCZ',
+					 'SLU','SMY','SZA','STA','SGL','SRS','SBE','SBE','SBL','SPS','SRB','SZO','SRC','SWD','SJZ','SZY','KOL',
+					 'KRA','KCH','KOS','KWA','KSU','KPR','KMY','KNT','KBC','KTT','KNS','KGR','KNS','KTA','KDA','RTA','RST',
+					 'RKL','RLE','RZE','RLA','RDE','RRS','RSR','RJS','RKR','RBR','RPZ','RJA','RLU','RPR','RSA','RLS']
+
+	pl_shortcuts2 = ['BL','BS','CB','CG','CT','CW','DB','DJ','DL','DW',
+					 'EL','EP','ES','FG','FZ','GA','GD','GS','KK','KR',
+					 'KN','KT','LB','LC','LU','LZ','NE','NO','OP','OB',
+					 'OK','PK','PL','PN','PO','PY','PP','PZ','RK','RP',
+					 'RT','RZ','SB','SC','SD','SG','SJ','SK','SL','SM',
+					 'SO','SR','ST','SW','SY','SZ','TK','WA','WB','WD',
+					 'WE','WF','WJ','WK','WL','WN','WO','WT','WU','WP',
+					 'WV','WS','WR','WW','WX','WY','WZ','ZK','ZS']
+	
+
+	if (offset3 == 0):
+		rand = random.randint(0,78)
+		background.paste(Image.open(source+pl_shortcuts3[rand][0]+'.png'),offset1)
+		background.paste(Image.open(source+pl_shortcuts3[rand][1]+'.png'),offset2)
+		return pl_shortcuts2[rand]
+	
+	else:
+		rand = random.randint(0,287)
+		background.paste(Image.open(source+pl_shortcuts3[rand][0]+'.png'),offset1)
+		background.paste(Image.open(source+pl_shortcuts3[rand][1]+'.png'),offset2)
+		background.paste(Image.open(source+pl_shortcuts3[rand][2]+'.png'),offset3)
+		return pl_shortcuts3[rand]
+
 # Function adds district shortcut in case of generating slovak license number
-def addDistrict(offset1, offset2, background, source):
+def addDistrictSK(offset1, offset2, background, source):
 	sk_shortcuts = ['BA','BL','BB','BJ','BN','BR',
 					'BS','BY','CA','DK','DS','DT',
 					'GA','GL','HC','HE','IL','KA',
@@ -115,6 +158,8 @@ def main():
 		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/characters/'
 	elif (nation == 'cz'):
 		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/characters/'
+	elif (nation == 'pl'):
+		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/characters/'
 
 	os.chdir(source)
 	for root, dirs, files in os.walk(source):
@@ -127,11 +172,11 @@ def main():
 		characters = ''
 		if (nation == 'sk'):
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_sk.png', 'r')
-			sign_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/znak.png','r')
+			sign_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/znak_vec.png','r')
 			sign_img_offset = (524,100)
 			background.paste(sign_img, sign_img_offset)
 			offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
-			characters += addDistrict((196,40), (366,40), background, source)
+			characters += addDistrictSK((196,40), (366,40), background, source)
 
 		elif (nation == 'cz'):	
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_cz.png', 'r')
@@ -140,19 +185,29 @@ def main():
 			stk_layout_offset = (681,41) #(681,53)
 			background.paste(stk_layout_img, stk_layout_offset)
 
-			# STK
-			if i % 2 == 0:
-				stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk.png','r')
-				stk_offset = (693,63) #(680,58)
-				background.paste(stk_img, stk_offset, stk_img)
+			# # STK
+			# if i % 2 == 0:
+			# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk.png','r')
+			# 	stk_offset = (693,63) #(680,58)
+			# 	background.paste(stk_img, stk_offset, stk_img)
 
-			# EK
-			if i % 4 == 0:
-				ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
-				ek_offset = (695,188)
-				background.paste(ek_img, ek_offset, ek_img)
+			# # EK
+			# if i % 4 == 0:
+			# 	ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
+			# 	ek_offset = (695,188)
+			# 	background.paste(ek_img, ek_offset, ek_img)
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
+
+
+		elif (nation == 'pl'):
+			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/vzor_pl.png', 'r')
+			if (i % 2 == 0):
+				characters += addDistrictPL((170,55),(348,55),0,background, source)
+				offsets = [(635,55),(805,55),(978,55),(1155,55),(1330,55)]
+			else:
+				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
+				offsets = [(805,55),(978,55),(1155,55),(1330,55)]
 
 		for offset in offsets:
 			character = generate_char(offset, images, nation)

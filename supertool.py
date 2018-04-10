@@ -12,6 +12,7 @@ import numpy as np
 import io
 import os
 import random
+import math
 import cv2
 import re
 import ast
@@ -57,23 +58,40 @@ def showImage(image, name='img'):
 
 # Function adds Gaussian noise
 def add_gaussian_noise(image_in):
-	noise_sigma = 15
+	noise_sigma = 20
 	temp_image = np.float64(np.copy(image_in))
 
 	h = temp_image.shape[0]
 	w = temp_image.shape[1]
 	noise = np.random.randn(h, w) * noise_sigma
-
 	noisy_image = np.zeros(temp_image.shape, np.float64)
+
 	if len(temp_image.shape) == 2:
 	    noisy_image = temp_image + noise
 	else:
 	    noisy_image[:,:,0] = temp_image[:,:,0] + noise
 	    noisy_image[:,:,1] = temp_image[:,:,1] + noise
 	    noisy_image[:,:,2] = temp_image[:,:,2] + noise
-
+	
+	# noisy_image = convert_to_uint8(noisy_image)
 	return noisy_image
    
+
+# Another Gaussian noise
+def gaussianNoise(img):
+	m = (20,20,20) 
+	s = (20,20,20)
+	noise = cv2.randn(img,m,s)
+	noisy_image = cv2.add(noise, img)
+	return noisy_image
+
+
+def convert_to_uint8(image_in):
+    temp_image = np.float64(np.copy(image_in))
+    showImage(temp_image)
+    cv2.normalize(temp_image, temp_image, 0, 255, cv2.NORM_MINMAX, dtype=-1)
+    return temp_image.astype(np.uint8)
+
 # Function creates output directory
 def createOutputDir():
 	filename = path_to_output
@@ -151,10 +169,12 @@ def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinat
 	# Add warped source image to destination image.
 	im_out = im_dst + im_temp
 
-	#Resize image to wanted size
-	output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+	return im_out;
 
-	return output_img
+	#Resize image to wanted size
+	# output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+
+	# return output_img
 
 # Function returns destination image
 def getDestinationImage(tmp):
@@ -229,6 +249,73 @@ def applyMotionBlur(image):
 
 	return output
 
+def warpImage(img):
+	rows, cols = img.shape[:2]
+
+	#####################
+	# Vertical wave
+
+	img_output = np.zeros(img.shape, dtype=img.dtype)
+
+	for i in range(rows):
+	    for j in range(cols):
+	        offset_x = int(25.0 * math.sin(2 * 3.14 * i / 180))
+	        offset_y = 0
+	        if j+offset_x < rows:
+	            img_output[i,j] = img[i,(j+offset_x)%cols]
+	        else:
+	            img_output[i,j] = 0
+
+	showImage(img, 'Input')
+	showImage(img_output, 'Vertical wave')
+
+	#####################
+	# Horizontal wave
+
+	img_output = np.zeros(img.shape, dtype=img.dtype)
+
+	for i in range(rows):
+	    for j in range(cols):
+	        offset_x = 0
+	        offset_y = int(16.0 * math.sin(2 * 3.14 * j / 150))
+	        if i+offset_y < rows:
+	            img_output[i,j] = img[(i+offset_y)%rows,j]
+	        else:
+	            img_output[i,j] = 0
+
+	showImage(img_output, 'Horizontal wave')
+
+	#####################
+	# Both horizontal and vertical 
+
+	img_output = np.zeros(img.shape, dtype=img.dtype)
+
+	for i in range(rows):
+	    for j in range(cols):
+	        offset_x = int(20.0 * math.sin(2 * 3.14 * i / 150))
+	        offset_y = int(20.0 * math.cos(2 * 3.14 * j / 150))
+	        if i+offset_y < rows and j+offset_x < cols:
+	            img_output[i,j] = img[(i+offset_y)%rows,(j+offset_x)%cols]
+	        else:
+	            img_output[i,j] = 0
+
+	showImage(img_output, 'Multidirectional wave')
+
+	#####################
+	# Concave effect
+
+	img_output = np.zeros(img.shape, dtype=img.dtype)
+
+	for i in range(rows):
+	    for j in range(cols):
+	        offset_x = int(128.0 * math.sin(2 * 3.14 * i / (2*cols)))
+	        offset_y = 0
+	        if j+offset_x < cols:
+	            img_output[i,j] = img[i,(j+offset_x)%cols]
+	        else:
+	            img_output[i,j] = 0
+
+
 # Main function
 def main():
 	i = 1
@@ -246,9 +333,11 @@ def main():
 				continue
 
 			im_src = getSourceImage(file_name)
-			pts_src = getSourcePoints(im_src)
-			tmp = random.choice(templates)
 
+			pts_src = getSourcePoints(im_src)
+			
+			tmp = random.choice(templates)
+			
 			# Prints name of random chosen file from template files
 			print(tmp)
 
@@ -265,9 +354,9 @@ def main():
 			createJson(file_name, final_coords, outputDir, i, True, False)
 
 			# Applying motion blur on every second  outputimage
-			if (i % 2 == 0):
-				blured_out = applyMotionBlur(blured_out)
-				createJson(file_name, final_coords, outputDir, i, True, True)
+			#if (i % 2 == 0):
+				# blured_out = applyMotionBlur(blured_out)
+				# createJson(file_name, final_coords, outputDir, i, True, True)
 
 			coordinates_x = []
 			coordinates_y = []
