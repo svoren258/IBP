@@ -64,8 +64,8 @@ def generate_char(offset, images, nation):
 	regex1 = r"([1-9].png)"
 	regex2 = r"(A|B|C|E|H|J|K|L|M|P|S|T|U|Z.png)"
 	regex3 = r"(B|D|I|O|Z.png)"
-	pl_typ1 = r"([0-9]*[A-Z]*[0-9]*)"
-	pl_typ2 = r"([A-Z]*[0-9]*[A-Z]*)"
+	regex4 = r"(A|C|E|F|G|H|J|K|L|M|N|P|R|S|T|U|W|X|Y.png)"
+
 
 	if (nation == 'cz'):
 		if offset == (205,53) and not re.search(regex1, character[1]):
@@ -92,16 +92,22 @@ def generate_char(offset, images, nation):
 
 
 	elif (nation == 'pl'):
-		if re.search(regex3, character[1]):
+		if (re.search(regex3, character[1]) or ((offset == (635,55) or offset == (805,55) or offset == (700,55) or offset == (978,55) or offset == (870,55))  and re.search(regex4, character[1]))):
 			character = generate_char(offset, images, nation)
-		# previous = pl_spz
-		# pl_spz += character[1][0]
-		# if (len(pl_spz) != 0):	
-		# 	if (not re.search(pl_typ1, pl_spz)):
-		# 		pl_spz = previous
-		# 		character = generate_char(offset, images, nation)
 
 	return character
+
+def return_char(type_of_char, images):
+	numbers = r"([0-9].png)"
+	letters = r"(A|C|E|F|G|H|J|K|L|M|N|P|R|S|T|U|W|X|Y.png)"
+	char = random.choice(images)
+	if (type_of_char == 'letter'):
+		while (not re.search(letters, char)):
+			char = random.choice(images)
+	elif (type_of_char == 'number'):
+		while (not re.search(numbers,char)):
+			char = random.choice(images)
+	return char
 
 # Function adds district shortcut in case of generating poland license number
 def addDistrictPL(offset1, offset2, offset3, background, source):
@@ -135,8 +141,8 @@ def addDistrictPL(offset1, offset2, offset3, background, source):
 
 	if (offset3 == 0):
 		rand = random.randint(0,78)
-		background.paste(Image.open(source+pl_shortcuts3[rand][0]+'.png'),offset1)
-		background.paste(Image.open(source+pl_shortcuts3[rand][1]+'.png'),offset2)
+		background.paste(Image.open(source+pl_shortcuts2[rand][0]+'.png'),offset1)
+		background.paste(Image.open(source+pl_shortcuts2[rand][1]+'.png'),offset2)
 		return pl_shortcuts2[rand]
 	
 	else:
@@ -232,7 +238,7 @@ def main():
 				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
 				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
 
-
+	
 		for offset in offsets:
 			character = generate_char(offset, images, nation)
 			characters += character[1][0]
