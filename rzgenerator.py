@@ -63,8 +63,6 @@ def generate_char(offset, images, nation):
 	regex = r"([A-Z].png)"
 	regex1 = r"([1-9].png)"
 	regex2 = r"(A|B|C|E|H|J|K|L|M|P|S|T|U|Z.png)"
-	regex3 = r"(B|D|I|O|Z.png)"
-	regex4 = r"(A|C|E|F|G|H|J|K|L|M|N|P|R|S|T|U|W|X|Y.png)"
 
 
 	if (nation == 'cz'):
@@ -90,22 +88,21 @@ def generate_char(offset, images, nation):
 			if offset == num_offset and not re.search(regex,character[1]):
 				character = generate_char(offset, images, nation)
 
-
-	elif (nation == 'pl'):
-		if (re.search(regex3, character[1]) or ((offset == (635,55) or offset == (805,55) or offset == (700,55) or offset == (978,55) or offset == (870,55))  and re.search(regex4, character[1]))):
-			character = generate_char(offset, images, nation)
-
 	return character
 
 def return_char(type_of_char, images):
 	numbers = r"([0-9].png)"
+	notnull = r"([1-9].png)"
 	letters = r"(A|C|E|F|G|H|J|K|L|M|N|P|R|S|T|U|W|X|Y.png)"
 	char = random.choice(images)
 	if (type_of_char == 'letter'):
-		while (not re.search(letters, char)):
+		while (not re.search(letters, char[1])):
 			char = random.choice(images)
 	elif (type_of_char == 'number'):
-		while (not re.search(numbers,char)):
+		while (not re.search(numbers, char[1])):
+			char = random.choice(images)
+	elif (type_of_char == 'notnull'):
+		while(not re.search(notnull, char[1])):
 			char = random.choice(images)
 	return char
 
@@ -172,8 +169,25 @@ def addDistrictSK(offset1, offset2, background, source):
 	background.paste(Image.open(source+sk_shortcuts[rand][1]+'.png'),offset2)
 	return sk_shortcuts[rand]
 
+def generate_pl_char(character, images, offset, background):
+	global characters
+	if (character == 'number'):
+		number = return_char('number', images)
+		background.paste(number[0], offset)
+		characters += number[1][0]
+	elif (character == 'letter'):
+		letter = return_char('letter', images)
+		background.paste(letter[0], offset)
+		characters += letter[1][0]
+
+	elif (character == 'notnull'):
+		notnull = return_char('notnull', images)
+		background.paste(notnull[0], offset)
+		characters += notnull[1][0]
+
 # Main function
 def main():
+	global characters
 	images = []
 	argparse(sys.argv[1:])
 
@@ -229,20 +243,140 @@ def main():
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(545,135))
 				characters += addDistrictPL((170,55),(348,55),0,background, source)
 				offsets = [(635,55),(805,55),(985,55),(1155,55),(1330,55)]
-			elif (i % 4 == 0):
+				rand_num = random.randint(1,4)
+				if (rand_num == 1):
+					for offset in offsets:
+						if (offset == (635,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 2):
+					for offset in offsets:
+						if (offset == (635,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (805,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 3):
+					for offset in offsets: 
+						if (offset == (635,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (1155,55) or offset == (1330,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 4):
+					for offset in offsets:
+						if (offset == (635,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (1330,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+			elif (i % 2 == 1):
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(715,135))
 				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
-				offsets = [(805,55),(978,55),(1155,55),(1330,55)]
+				offsets = [(805,55),(980,55),(1155,55),(1330,55)]
+				rand_num = random.randint(1,8)
+
+				if (rand_num == 1):
+					for offset in offsets:
+						if (offset == (805,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 2):
+					for offset in offsets:
+						if (offset == (805,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (1155,55) or offset == (1330,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 3):
+					for offset in offsets:
+						if (offset == (805,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (978,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 4):
+					for offset in offsets:
+						if (offset == (1330,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (1155,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+				elif (rand_num == 5):
+					for offset in offsets:
+						if (offset == (978,55) or offset == (1155,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('notnull', images, offset, background)
+
+				elif (rand_num == 6):
+					for offset in offsets:
+						if (offset == (805,55) or offset == (978,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('notnull', images, offset, background)
+
+				elif (rand_num == 7):
+					for offset in offsets:
+						if (offset == (805,55) or offset ==  (1330,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('notnull', images, offset, background)
+
+				elif (rand_num == 8):
+					for offset in offsets:
+						if (offset == (978,55)):
+							generate_pl_char('number', images, offset, background)
+						else:
+							generate_pl_char('notnull', images, offset, background)
+
+
 			else:
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(640,135))
 				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
 				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
+				rand_num = random.randint(1,3)
+				if (rand_num == 1):
+					for offset in offsets:
+						generate_pl_char('notnull', images, offset, background)
 
-	
-		for offset in offsets:
-			character = generate_char(offset, images, nation)
-			characters += character[1][0]
-			background.paste(character[0], offset)
+				elif (rand_num == 2):
+					for offset in offsets:
+						if (offset == (1370,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('notnull', images, offset, background)
+
+				elif (rand_num == 3):
+					for offset in offsets:
+						if (offset == (1205,55) or offset == (1370,55)):
+							generate_pl_char('letter', images, offset, background)
+
+						else:
+							generate_pl_char('notnull', images, offset, background)
+
+
+		if (nation == 'sk' or nation == 'cz'):
+			for offset in offsets:
+				character = generate_char(offset, images, nation)
+				characters += character[1][0]
+				background.paste(character[0], offset)
 
 		# Saving registration nubmer
 		textdir = outputdir
