@@ -61,20 +61,21 @@ def generate_char(offset, images, nation):
 	global pl_spz
 	character = random.choice(images)
 	regex = r"([A-Z].png)"
+	regex1 = r"([1-9].png)"
 	regex2 = r"(A|B|C|E|H|J|K|L|M|P|S|T|U|Z.png)"
-
+	regex3 = r"(B|D|I|O|Z.png)"
 	pl_typ1 = r"([0-9]*[A-Z]*[0-9]*)"
 	pl_typ2 = r"([A-Z]*[0-9]*[A-Z]*)"
 
 	if (nation == 'cz'):
-		if offset == (205,53) and character[1] == '0.png':
+		if offset == (205,53) and not re.search(regex1, character[1]):
 			character = generate_char(offset, images, nation)
 			return character
 
 		if offset == (358,53) and not re.search(regex2,character[1]):
 			character = generate_char(offset, images, nation)
 			
-		for num_offset in [(205,53),(854,53),(1007,53),(1160,53),(1313,53)]:
+		for num_offset in [(511,53),(854,53),(1007,53),(1160,53),(1313,53)]:
 			if offset == num_offset and re.search(regex,character[1]):
 				character = generate_char(offset, images, nation)
 				break
@@ -91,12 +92,14 @@ def generate_char(offset, images, nation):
 
 
 	elif (nation == 'pl'):
-		previous = pl_spz
-		pl_spz += character[1][0]
-		if (len(pl_spz) != 0):	
-			if (not re.search(pl_typ1, pl_spz)):
-				pl_spz = previous
-				character = generate_char(offset, images, nation)
+		if re.search(regex3, character[1]):
+			character = generate_char(offset, images, nation)
+		# previous = pl_spz
+		# pl_spz += character[1][0]
+		# if (len(pl_spz) != 0):	
+		# 	if (not re.search(pl_typ1, pl_spz)):
+		# 		pl_spz = previous
+		# 		character = generate_char(offset, images, nation)
 
 	return character
 
