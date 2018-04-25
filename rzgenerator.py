@@ -40,7 +40,7 @@ def argparse(argv):
 			print (
 				'Usage: python rzgenerator.py -i [amount] -o [output_dir_path] -t [nationality_shortcut]\n'
 				'	Application generates certain amount (first input argument) of czech or slovak license plates\n'
-				' 	(according to nationality shortcut - cz/sk as third input argument) and saves them to output directiory,\n'
+				' 	(according to nationality shortcut - cz/sk/pl/h as third input argument) and saves them to output directiory,\n'
 				'	which path is specified by second input argument argument (\'RZ/\' by default).'
 				)
 			sys.exit()
@@ -63,7 +63,7 @@ def generate_char(offset, images, nation):
 	regex = r"([A-Z].png)"
 	regex1 = r"([1-9].png)"
 	regex2 = r"(A|B|C|E|H|J|K|L|M|P|S|T|U|Z.png)"
-
+	regex3 = r"([0-9].png)"
 
 	if (nation == 'cz'):
 		if offset == (205,53) and not re.search(regex1, character[1]):
@@ -86,6 +86,15 @@ def generate_char(offset, images, nation):
 
 		for num_offset in [(1193,40),(1363,40)]:
 			if offset == num_offset and not re.search(regex,character[1]):
+				character = generate_char(offset, images, nation)
+
+	elif (nation == 'h'): # [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+		for num_offset in [(250,48),(460,48),(670,48),(260,48),(470,48),(680,48)]:
+			if offset == num_offset and not re.search(regex,character[1]):
+				character = generate_char(offset, images, nation)
+
+		for num_offset in [(990,48),(1170,48),(1350,48),(1000,48),(1180,48),(1360,48)]:
+			if offset == num_offset and  not re.search(regex3,character[1]):
 				character = generate_char(offset, images, nation)
 
 	return character
@@ -197,6 +206,11 @@ def main():
 		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/characters/'
 	elif (nation == 'pl'):
 		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/characters/'
+	elif (nation == 'h'):
+		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/'
+	else:
+		print('Wrong nationality shortcut inserted, try help for more information.')
+		return
 
 	os.chdir(source)
 	for root, dirs, files in os.walk(source):
@@ -236,6 +250,45 @@ def main():
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
+		elif (nation == 'h'):
+			if (i % 2 == 0):
+				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor2_h.png', 'r')
+				dash_offset = (890,150)
+				offsets = [(260,48),(470,48),(680,48),(1000,48),(1180,48),(1360,48)]
+				
+			elif (i % 2 == 1):
+				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor3_h.png', 'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+
+			# elif (i % 5 == 2):
+			# 	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor4_h.png', 'r')
+			# 	dash_offset = (880,150)
+			# 	offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+
+			# elif (i % 5 == 3):
+			# 	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor5_h.png', 'r')
+			# 	dash_offset = (880,150)
+			# 	offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+
+			# elif (i % 5 == 4):
+			# 	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor6_h.png', 'r')
+			# 	dash_offset = (880,150)
+			# 	offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+
+			dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-.png', 'r')
+			background.paste(dash_img, dash_offset)
+			
+			# b = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/B.png', 'r')
+			# zero = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/0.png', 'r')
+			# offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+			# offsets_nums = [(990,48),(1170,48),(1350,48)]
+			# offsets2 = [(250,48),(460,48),(670,48)]
+			# for offset in offsets2:
+			# 	background.paste(b, offset)
+
+			# for offset in offsets_nums:
+			# 	background.paste(zero, offset)
 
 		elif (nation == 'pl'):
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/vzor_pl.png', 'r')
@@ -380,8 +433,7 @@ def main():
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
-
-		if (nation == 'sk' or nation == 'cz'):
+		if (nation == 'sk' or nation == 'cz' or nation =='h'):
 			for offset in offsets:
 				character = generate_char(offset, images, nation)
 				characters += character[1][0]
