@@ -140,13 +140,24 @@ def createJson(file_name, coordinates, outputDir, i, gauss, motion):
 def changeBlckAndWhiteValues(im_src):
 	(B, G, R) = cv2.split(im_src)
 
+	# for x in range(0,255):
+	# 	if (x < 127):
+	# 		R[R == x] = x + 10
+	# 		G[G == x] = x + 10
+	# 		B[B == x] = x + 10
+
+	# 	else:
+	# 		R[R == x] = x - 10
+	# 		G[G == x] = x - 10
+	# 		B[B == x] = x - 10
+
 	R[R == 0] = 50
 	G[G == 0] = 50
 	B[B == 0] = 50
 
-	R[R == 255] = 240
- 	G[G == 255] = 240
- 	B[B == 255] = 240
+	R[R == 255] = 250
+ 	G[G == 255] = 250
+ 	B[B == 255] = 250
 
  	im_src = cv2.merge([B, G, R])
  	return im_src
@@ -183,12 +194,12 @@ def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinat
 	# Add warped source image to destination image.
 	im_out = im_dst + im_temp
 
-	return im_out;
+	return im_out
 
 	#Resize image to wanted size
-	# output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
+	output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
 
-	# return output_img
+	return output_img
 
 # Function returns destination image
 def getDestinationImage(tmp):
@@ -208,7 +219,7 @@ def getSourceImage(file_name):
 			im_hsv[x,y][2] *= 0.675
 
 	im_src = cv2.cvtColor(im_hsv, cv2.COLOR_HSV2BGR)
-
+	
 	# Resize registration number to apply antialiasing
 	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
@@ -225,8 +236,8 @@ def getSourceImage(file_name):
 def getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y):
 	file = open(path_to_tmp + tmp + '.txt','r')
 	points = file.read()
-	#print points
 	points = ast.literal_eval(points)
+	
 	for point in points:
 		coordinates.append(point)
 		coordinates_x.append(point[0])
@@ -254,7 +265,6 @@ def getSourcePoints(im_src):
 def applyMotionBlur(image):
 
 	size = 15
-
 	# generating the kernel
 	kernel_motion_blur = np.zeros((size, size))
 	kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
@@ -297,7 +307,6 @@ def main():
 			im_out = createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinates_y)			
 
 			final_coords = getFinalCoords(coordinates_x, coordinates_y)
-
 			# Adding Gaussian blur added to output image
 			blured_out = cv2.GaussianBlur(im_out,(5,5),0)
 			createJson(file_name, final_coords, outputDir, i, True, False)

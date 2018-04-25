@@ -239,11 +239,11 @@ def main():
 
 		elif (nation == 'pl'):
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/vzor_pl.png', 'r')
-			if (i % 2 == 0):
+			if (i % 3 == 0):
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(545,135))
 				characters += addDistrictPL((170,55),(348,55),0,background, source)
 				offsets = [(635,55),(805,55),(985,55),(1155,55),(1330,55)]
-				rand_num = random.randint(1,4)
+				rand_num = random.randint(1,5)
 				if (rand_num == 1):
 					for offset in offsets:
 						if (offset == (635,55)):
@@ -278,7 +278,16 @@ def main():
 						else:
 							generate_pl_char('number', images, offset, background)
 
-			elif (i % 2 == 1):
+				elif (rand_num == 5):
+					for offset in offsets:
+						if (offset == (635,55)):
+							generate_pl_char('notnull', images, offset, background)	
+						elif (offset == (805,55) or offset == (985,55)):
+							generate_pl_char('letter', images, offset, background)
+						else:
+							generate_pl_char('number', images, offset, background)
+
+			elif (i % 3 == 1):
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(715,135))
 				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
 				offsets = [(805,55),(980,55),(1155,55),(1330,55)]
@@ -347,7 +356,7 @@ def main():
 							generate_pl_char('notnull', images, offset, background)
 
 
-			else:
+			elif (i % 3 == 2):
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(640,135))
 				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
 				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
