@@ -194,6 +194,28 @@ def generate_pl_char(character, images, offset, background):
 		background.paste(notnull[0], offset)
 		characters += notnull[1][0]
 
+def createImagesArray(images, source):
+	os.chdir(source)
+	for root, dirs, files in os.walk(source):
+	    for file_name in files:
+	        img = Image.open(os.path.join(root, file_name), 'r')
+	        images.append([img,file_name])
+
+	return images
+
+def carType(nation, source):
+	if nation == 'h':
+		if source == '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_e/':
+			return ' E-CAR or CNG'
+		elif source == '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_taxi/':
+			return ' TAXI'
+		elif source == '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_truck/':
+			return ' TRUCK'
+		else:
+			return ''
+	else:
+		return ''
+
 # Main function
 def main():
 	global characters
@@ -212,12 +234,6 @@ def main():
 		print('Wrong nationality shortcut inserted, try help for more information.')
 		return
 
-	os.chdir(source)
-	for root, dirs, files in os.walk(source):
-	    for file_name in files:
-	        img = Image.open(os.path.join(root, file_name), 'r')
-	        images.append([img,file_name])
-
 
 	for i in range(int(inputnum)):
 		characters = ''
@@ -228,6 +244,7 @@ def main():
 			background.paste(sign_img, sign_img_offset)
 			offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
 			characters += addDistrictSK((196,40), (366,40), background, source)
+			images = createImagesArray(images, source)
 
 		elif (nation == 'cz'):	
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_cz.png', 'r')
@@ -235,6 +252,7 @@ def main():
 			stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek.png', 'r')
 			stk_layout_offset = (681,41) #(681,53)
 			background.paste(stk_layout_img, stk_layout_offset)
+			images = createImagesArray(images, source)
 
 			# # STK
 			# if i % 2 == 0:
@@ -251,32 +269,46 @@ def main():
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
 		elif (nation == 'h'):
-			if (i % 2 == 0):
+			images = []
+			if (i % 5 == 0):
+				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/'
 				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor2_h.png', 'r')
+				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-.png', 'r')
 				dash_offset = (890,150)
 				offsets = [(260,48),(470,48),(680,48),(1000,48),(1180,48),(1360,48)]
+				images = createImagesArray(images, source)
 				
-			elif (i % 2 == 1):
+			elif (i % 5 == 1):
+				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/'
 				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor3_h.png', 'r')
+				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-.png', 'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+				images = createImagesArray(images, source)
 
-			# elif (i % 5 == 2):
-			# 	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor4_h.png', 'r')
-			# 	dash_offset = (880,150)
-			# 	offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+			elif (i % 5 == 2):
+				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_taxi/'
+				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor4_h.png', 'r')
+				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-_taxi.png', 'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+				images = createImagesArray(images, source)
 
-			# elif (i % 5 == 3):
-			# 	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor5_h.png', 'r')
-			# 	dash_offset = (880,150)
-			# 	offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+			elif (i % 5 == 3):
+				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_truck/'
+				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor5_h.png', 'r')
+				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-_truck.png', 'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+				images = createImagesArray(images, source)
 
-			# elif (i % 5 == 4):
-			# 	background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor6_h.png', 'r')
-			# 	dash_offset = (880,150)
-			# 	offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
-
-			dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-.png', 'r')
+			elif (i % 5 == 4):
+				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_e/'
+				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor6_h.png', 'r')
+				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-_e.png', 'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+				images = createImagesArray(images, source)
 			background.paste(dash_img, dash_offset)
 			
 			# b = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/B.png', 'r')
@@ -291,6 +323,7 @@ def main():
 			# 	background.paste(zero, offset)
 
 		elif (nation == 'pl'):
+			images = createImagesArray(images, source)
 			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/vzor_pl.png', 'r')
 			if (i % 3 == 0):
 				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(545,135))
@@ -448,9 +481,10 @@ def main():
 		        if exc.errno != errno.EEXIST:
 		            raise
 
+		type_of_car = carType(nation, source)
 		# Creating .txt file that includes to license-plate number 
 		txtfile = open(textdir + 'rz' + str(i) + '.png.txt','w')
-		txtfile.write(str(characters)+ ' ' + nation)
+		txtfile.write(str(characters)+ ' ' + nation + type_of_car)
 		txtfile.close()
 		background.save(outputdir + 'rz' + str(i) + '.png')
 main()
