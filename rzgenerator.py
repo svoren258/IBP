@@ -147,15 +147,15 @@ def addDistrictPL(offset1, offset2, offset3, background, source):
 
 	if (offset3 == 0):
 		rand = random.randint(0,78)
-		background.paste(Image.open(source+pl_shortcuts2[rand][0]+'.png'),offset1)
-		background.paste(Image.open(source+pl_shortcuts2[rand][1]+'.png'),offset2)
+		background.paste(Image.open(source+'/'+pl_shortcuts2[rand][0]+'.png'),offset1)
+		background.paste(Image.open(source+'/'+pl_shortcuts2[rand][1]+'.png'),offset2)
 		return pl_shortcuts2[rand]
 	
 	else:
 		rand = random.randint(0,287)
-		background.paste(Image.open(source+pl_shortcuts3[rand][0]+'.png'),offset1)
-		background.paste(Image.open(source+pl_shortcuts3[rand][1]+'.png'),offset2)
-		background.paste(Image.open(source+pl_shortcuts3[rand][2]+'.png'),offset3)
+		background.paste(Image.open(source+'/'+pl_shortcuts3[rand][0]+'.png'),offset1)
+		background.paste(Image.open(source+'/'+pl_shortcuts3[rand][1]+'.png'),offset2)
+		background.paste(Image.open(source+'/'+pl_shortcuts3[rand][2]+'.png'),offset3)
 		return pl_shortcuts3[rand]
 
 # Function adds district shortcut in case of generating slovak license number
@@ -174,8 +174,8 @@ def addDistrictSK(offset1, offset2, background, source):
 					'VK','VT','ZA','ZC','ZH','ZM','ZV']
 
 	rand = random.randint(0,72)
-	background.paste(Image.open(source+sk_shortcuts[rand][0]+'.png'),offset1)
-	background.paste(Image.open(source+sk_shortcuts[rand][1]+'.png'),offset2)
+	background.paste(Image.open(source+'/'+sk_shortcuts[rand][0]+'.png'),offset1)
+	background.paste(Image.open(source+'/'+sk_shortcuts[rand][1]+'.png'),offset2)
 	return sk_shortcuts[rand]
 
 def generate_pl_char(character, images, offset, background):
@@ -205,11 +205,11 @@ def createImagesArray(images, source):
 
 def carType(nation, source):
 	if nation == 'h':
-		if source == '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_e/':
+		if source == os.path.abspath('H/characters_e/'):
 			return ' E-CAR or CNG'
-		elif source == '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_taxi/':
+		elif source == os.path.abspath('H/characters_taxi/'):
 			return ' TAXI'
-		elif source == '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_truck/':
+		elif source == os.path.abspath('H/characters_truck/'):
 			return ' TRUCK'
 		else:
 			return ''
@@ -223,13 +223,13 @@ def main():
 	argparse(sys.argv[1:])
 
 	if (nation == 'sk'):
-		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/characters/'
+		source = os.path.abspath('SK/characters/')
 	elif (nation == 'cz'):
-		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/characters/'
+		source = os.path.abspath('CZ/characters/')
 	elif (nation == 'pl'):
-		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/characters/'
+		source = os.path.abspath('PL/characters/')
 	elif (nation == 'h'):
-		source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/'
+		source = os.path.abspath('H/characters/')
 	else:
 		print('Wrong nationality shortcut inserted, try help for more information.')
 		return
@@ -238,8 +238,10 @@ def main():
 	for i in range(int(inputnum)):
 		characters = ''
 		if (nation == 'sk'):
-			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/vzor_sk.png', 'r')
-			sign_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/SK/znak_vec.png','r')
+			if (i != 0):
+				os.chdir('../..')
+			background = Image.open(os.path.abspath('SK/vzor_sk.png'),'r')
+			sign_img = Image.open(os.path.abspath('SK/znak_vec.png'),'r')
 			sign_img_offset = (524,100)
 			background.paste(sign_img, sign_img_offset)
 			offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
@@ -247,86 +249,78 @@ def main():
 			images = createImagesArray(images, source)
 
 		elif (nation == 'cz'):	
-			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/vzor_cz.png', 'r')
-
-			stk_layout_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk_ek.png', 'r')
-			stk_layout_offset = (681,41) #(681,53)
+			if (i != 0):
+				os.chdir('../../')
+			background = Image.open(os.path.abspath('CZ/vzor_cz.png'),'r')
+			stk_layout_img = Image.open(os.path.abspath('CZ/stk_ek.png'),'r')
+			stk_layout_offset = (681,41)
 			background.paste(stk_layout_img, stk_layout_offset)
 			images = createImagesArray(images, source)
 
-			# # STK
-			# if i % 2 == 0:
-			# 	stk_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/stk.png','r')
-			# 	stk_offset = (693,63) #(680,58)
-			# 	background.paste(stk_img, stk_offset, stk_img)
+			# STK
+			if i % 2 == 0:
+				stk_img = Image.open(os.path.abspath('../stk.png'),'r')
+				stk_offset = (693,63)
+				background.paste(stk_img, stk_offset, stk_img)
 
-			# # EK
-			# if i % 4 == 0:
-			# 	ek_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/CZ/ek.png','r')
-			# 	ek_offset = (695,188)
-			# 	background.paste(ek_img, ek_offset, ek_img)
+			# EK
+			if i % 4 == 0:
+				ek_img = Image.open(os.path.abspath('../ek.png'),'r')
+				ek_offset = (695,188)
+				background.paste(ek_img, ek_offset, ek_img)
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
+
 
 		elif (nation == 'h'):
 			images = []
 			if (i % 5 == 0):
-				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/'
-				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor2_h.png', 'r')
-				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-.png', 'r')
+				source = os.path.abspath('H/characters/')
+				background = Image.open(os.path.abspath('H/vzor2_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('H/-.png'), 'r')
 				dash_offset = (890,150)
 				offsets = [(260,48),(470,48),(680,48),(1000,48),(1180,48),(1360,48)]
 				images = createImagesArray(images, source)
 				
 			elif (i % 5 == 1):
-				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/'
-				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor3_h.png', 'r')
-				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-.png', 'r')
+				# source1 = os.path.abspath('H/characters/')
+				background = Image.open(os.path.abspath('../vzor3_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('../-.png'), 'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
 				images = createImagesArray(images, source)
 
 			elif (i % 5 == 2):
-				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_taxi/'
-				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor4_h.png', 'r')
-				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-_taxi.png', 'r')
+				source = os.path.abspath('../../H/characters_taxi/')
+				background = Image.open(os.path.abspath('../vzor4_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('../-_taxi.png'), 'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
 				images = createImagesArray(images, source)
 
 			elif (i % 5 == 3):
-				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_truck/'
-				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor5_h.png', 'r')
-				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-_truck.png', 'r')
+				source = os.path.abspath('../../H/characters_truck/')
+				background = Image.open(os.path.abspath('../vzor5_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('../-_truck.png'),'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
 				images = createImagesArray(images, source)
 
 			elif (i % 5 == 4):
-				source = '/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters_e/'
-				background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/vzor6_h.png', 'r')
-				dash_img = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/-_e.png', 'r')
+				source = os.path.abspath('../../H/characters_e/')
+				background = Image.open(os.path.abspath('../vzor6_h.png'),'r')
+				dash_img = Image.open(os.path.abspath('../-_e.png'), 'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
 				images = createImagesArray(images, source)
+				os.chdir('../../')
 			background.paste(dash_img, dash_offset)
-			
-			# b = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/B.png', 'r')
-			# zero = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/H/characters/0.png', 'r')
-			# offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
-			# offsets_nums = [(990,48),(1170,48),(1350,48)]
-			# offsets2 = [(250,48),(460,48),(670,48)]
-			# for offset in offsets2:
-			# 	background.paste(b, offset)
-
-			# for offset in offsets_nums:
-			# 	background.paste(zero, offset)
 
 		elif (nation == 'pl'):
 			images = createImagesArray(images, source)
-			background = Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/vzor_pl.png', 'r')
+			background = Image.open(os.path.abspath('../../PL/vzor_pl.png'),'r')
 			if (i % 3 == 0):
-				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(545,135))
+				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(545,135))
 				characters += addDistrictPL((170,55),(348,55),0,background, source)
 				offsets = [(635,55),(805,55),(985,55),(1155,55),(1330,55)]
 				rand_num = random.randint(1,5)
@@ -374,7 +368,7 @@ def main():
 							generate_pl_char('number', images, offset, background)
 
 			elif (i % 3 == 1):
-				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(715,135))
+				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(715,135))
 				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
 				offsets = [(805,55),(980,55),(1155,55),(1330,55)]
 				rand_num = random.randint(1,8)
@@ -443,7 +437,7 @@ def main():
 
 
 			elif (i % 3 == 2):
-				background.paste(Image.open('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/PL/znamka.png'),(640,135))
+				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(640,135))
 				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
 				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
 				rand_num = random.randint(1,3)
