@@ -20,7 +20,7 @@ from matplotlib import pyplot as plt
 from PIL import Image
 
 inputnum = 0
-outputdir = '../../RZ/'
+outputdir = os.path.abspath('RZ')+'/'
 nation = ''
 characters = ''
 pl_spz = ''
@@ -47,7 +47,7 @@ def argparse(argv):
 		elif opt in ("-i"):
 			inputnum = arg
 		elif opt in ("-o"):
-			outputdir = arg
+			outputdir = os.path.abspath(arg)+'/'
 		elif opt in ("-t"):
 			nation = arg
 
@@ -93,7 +93,7 @@ def generate_char(offset, images, nation):
 			if offset == num_offset and not re.search(regex,character[1]):
 				character = generate_char(offset, images, nation)
 
-		for num_offset in [(990,48),(1170,48),(1350,48),(1000,48),(1180,48),(1360,48)]:
+		for num_offset in [(990,48),(1175,48),(1350,48),(1000,48),(1185,48),(1360,48)]:
 			if offset == num_offset and  not re.search(regex3,character[1]):
 				character = generate_char(offset, images, nation)
 
@@ -220,51 +220,83 @@ def carType(nation, source):
 def main():
 	global characters
 	images = []
+	images_classic = []
+	images_taxi = []
+	images_truck = []
+	images_e = []
+	images_small = []
 	argparse(sys.argv[1:])
 
 	if (nation == 'sk'):
 		source = os.path.abspath('SK/characters/')
+		images = createImagesArray(images, source)
 	elif (nation == 'cz'):
 		source = os.path.abspath('CZ/characters/')
+		images = createImagesArray(images, source)
 	elif (nation == 'pl'):
-		source = os.path.abspath('PL/characters/')
+		source_classic = os.path.abspath('PL/characters/')
+		source_small = os.path.abspath('PL/characters_small/')
+		images_classic = createImagesArray(images_classic, source_classic)
+		images_small = createImagesArray(images_small, source_small)
 	elif (nation == 'h'):
-		source = os.path.abspath('H/characters/')
+		source_classic = os.path.abspath('H/characters/')
+		source_taxi = os.path.abspath('H/characters_taxi/')
+		source_truck = os.path.abspath('H/characters_truck/')
+		source_e = os.path.abspath('H/characters_e/')
+		images_classic = createImagesArray(images_classic, source_classic)
+		images_taxi = createImagesArray(images_taxi, source_taxi)
+		images_truck = createImagesArray(images_truck, source_truck)
+		images_e = createImagesArray(images_e, source_e)
+
 	else:
-		print('Wrong nationality shortcut inserted, try help for more information.')
+		print('Wrong nationality shortcut inserted, try help fo r more information.')
 		return
 
 
 	for i in range(int(inputnum)):
 		characters = ''
 		if (nation == 'sk'):
-			if (i != 0):
-				os.chdir('../..')
-			background = Image.open(os.path.abspath('SK/vzor_sk.png'),'r')
-			sign_img = Image.open(os.path.abspath('SK/znak_vec.png'),'r')
+			
+			background = Image.open(os.path.abspath('../vzor_sk.png'),'r')
+			sign_img = Image.open(os.path.abspath('../znak_vec.png'),'r')
 			sign_img_offset = (524,100)
 			background.paste(sign_img, sign_img_offset)
 			offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
 			characters += addDistrictSK((196,40), (366,40), background, source)
-			images = createImagesArray(images, source)
+			# offsets = [(196,40),(366,40),(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
+
+
+			# for offset in offsets:
+			# 	if offset == (196,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/K.png')),(196,40))
+			# 	elif offset == (366,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/E.png')),(366,40))
+			# 	elif offset == (683,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/K.png')),(683,40))
+			# 	elif offset == (853,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/E.png')),(853,40))
+			# 	elif offset == (1023,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/B.png')),(1023,40))
+			# 	elif offset == (1193,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/A.png')),(1193,40))
+			# 	elif offset == (1363,40):
+			# 		background.paste(Image.open(os.path.abspath('SK/characters/B.png')),(1363,40))
 
 		elif (nation == 'cz'):	
-			if (i != 0):
-				os.chdir('../../')
-			background = Image.open(os.path.abspath('CZ/vzor_cz.png'),'r')
-			stk_layout_img = Image.open(os.path.abspath('CZ/stk_ek.png'),'r')
+
+			background = Image.open(os.path.abspath('../vzor_cz.png'),'r')
+			stk_layout_img = Image.open(os.path.abspath('../stk_ek.png'),'r')
 			stk_layout_offset = (681,41)
 			background.paste(stk_layout_img, stk_layout_offset)
-			images = createImagesArray(images, source)
 
 			# STK
-			if i % 2 == 0:
+			if (i % 2 == 0):
 				stk_img = Image.open(os.path.abspath('../stk.png'),'r')
 				stk_offset = (693,63)
 				background.paste(stk_img, stk_offset, stk_img)
 
 			# EK
-			if i % 4 == 0:
+			if (i % 4 == 0):
 				ek_img = Image.open(os.path.abspath('../ek.png'),'r')
 				ek_offset = (695,188)
 				background.paste(ek_img, ek_offset, ek_img)
@@ -273,173 +305,183 @@ def main():
 
 
 		elif (nation == 'h'):
-			images = []
-			if (i % 5 == 0):
-				source = os.path.abspath('H/characters/')
-				background = Image.open(os.path.abspath('H/vzor2_h.png'), 'r')
-				dash_img = Image.open(os.path.abspath('H/-.png'), 'r')
+
+			if (i % 1500 == 0):
+				images = images_taxi
+				source = source_taxi
+				# source = os.path.abspath('../../H/characters_taxi/')
+				background = Image.open(os.path.abspath('../vzor4_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('../-_taxi.png'), 'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1175,48),(1350,48)]
+
+			elif (i % 1500 == 1):
+				images = images_truck
+				source = source_truck
+				# source = os.path.abspath('../../H/characters_truck/')
+				background = Image.open(os.path.abspath('../vzor5_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('../-_truck.png'),'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1175,48),(1350,48)]
+
+			elif (i % 1500 == 2):
+				images = images_e
+				source = source_e
+				# source = os.path.abspath('../../H/characters_e/')
+				background = Image.open(os.path.abspath('../vzor6_h.png'),'r')
+				dash_img = Image.open(os.path.abspath('../-_e.png'), 'r')
+				dash_offset = (880,150)
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1175,48),(1350,48)]
+				# os.chdir('../../')
+
+			elif (i % 2 == 0):
+				images = images_classic
+				source = source_classic
+				#source = os.path.abspath('H/characters/')
+				background = Image.open(os.path.abspath('../vzor2_h.png'), 'r')
+				dash_img = Image.open(os.path.abspath('../-.png'), 'r')
 				dash_offset = (890,150)
-				offsets = [(260,48),(470,48),(680,48),(1000,48),(1180,48),(1360,48)]
-				images = createImagesArray(images, source)
+				offsets = [(260,48),(470,48),(680,48),(1000,48),(1185,48),(1360,48)]
 				
-			elif (i % 5 == 1):
+			elif (i % 2 == 1):
+				images = images_classic
+				source = source_classic
 				# source1 = os.path.abspath('H/characters/')
 				background = Image.open(os.path.abspath('../vzor3_h.png'), 'r')
 				dash_img = Image.open(os.path.abspath('../-.png'), 'r')
 				dash_offset = (880,150)
-				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
-				images = createImagesArray(images, source)
-
-			elif (i % 5 == 2):
-				source = os.path.abspath('../../H/characters_taxi/')
-				background = Image.open(os.path.abspath('../vzor4_h.png'), 'r')
-				dash_img = Image.open(os.path.abspath('../-_taxi.png'), 'r')
-				dash_offset = (880,150)
-				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
-				images = createImagesArray(images, source)
-
-			elif (i % 5 == 3):
-				source = os.path.abspath('../../H/characters_truck/')
-				background = Image.open(os.path.abspath('../vzor5_h.png'), 'r')
-				dash_img = Image.open(os.path.abspath('../-_truck.png'),'r')
-				dash_offset = (880,150)
-				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
-				images = createImagesArray(images, source)
-
-			elif (i % 5 == 4):
-				source = os.path.abspath('../../H/characters_e/')
-				background = Image.open(os.path.abspath('../vzor6_h.png'),'r')
-				dash_img = Image.open(os.path.abspath('../-_e.png'), 'r')
-				dash_offset = (880,150)
-				offsets = [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
-				images = createImagesArray(images, source)
-				os.chdir('../../')
+				offsets = [(250,48),(460,48),(670,48),(990,48),(1175,48),(1350,48)]
 			background.paste(dash_img, dash_offset)
 
 		elif (nation == 'pl'):
-			images = createImagesArray(images, source)
-			background = Image.open(os.path.abspath('../../PL/vzor_pl.png'),'r')
+			background = Image.open(os.path.abspath('../vzor_pl.png'),'r')
 			if (i % 3 == 0):
-				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(545,135))
-				characters += addDistrictPL((170,55),(348,55),0,background, source)
-				offsets = [(635,55),(805,55),(985,55),(1155,55),(1330,55)]
+				images = images_classic
+				source = source_classic
+				background.paste(Image.open(os.path.abspath('../znamka.png')),(560,135))
+				characters += addDistrictPL((180,40),(365,40),0,background, source)
+				offsets = [(650,40),(820,40),(1000,40),(1170,40),(1345,40)]
 				rand_num = random.randint(1,5)
 				if (rand_num == 1):
 					for offset in offsets:
-						if (offset == (635,55)):
+						if (offset == (650,40)):
 							generate_pl_char('notnull', images, offset, background)	
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 2):
 					for offset in offsets:
-						if (offset == (635,55)):
+						if (offset == (650,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (805,55)):
+						elif (offset == (820,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 3):
 					for offset in offsets: 
-						if (offset == (635,55)):
+						if (offset == (620,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (1155,55) or offset == (1330,55)):
+						elif (offset == (1170,40) or offset == (1350,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 4):
 					for offset in offsets:
-						if (offset == (635,55)):
+						if (offset == (650,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (1330,55)):
+						elif (offset == (1350,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 5):
 					for offset in offsets:
-						if (offset == (635,55)):
+						if (offset == (650,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (805,55) or offset == (985,55)):
+						elif (offset == (820,40) or offset == (1000,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 			elif (i % 3 == 1):
-				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(715,135))
-				characters += addDistrictPL((170,55),(348,55),(530,55),background, source)
-				offsets = [(805,55),(980,55),(1155,55),(1330,55)]
+				images = images_classic
+				source = source_classic
+				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(735,135))
+				characters += addDistrictPL((180,40),(362,40),(545,40),background, source)
+				offsets = [(825,40),(1000,40),(1173,40),(1348,40)]
 				rand_num = random.randint(1,8)
 
 				if (rand_num == 1):
 					for offset in offsets:
-						if (offset == (805,55)):
+						if (offset == (825,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 2):
 					for offset in offsets:
-						if (offset == (805,55)):
+						if (offset == (825,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (1155,55) or offset == (1330,55)):
+						elif (offset == (1173,40) or offset == (1348,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 3):
 					for offset in offsets:
-						if (offset == (805,55)):
+						if (offset == (825,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (978,55)):
+						elif (offset == (1000,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 4):
 					for offset in offsets:
-						if (offset == (1330,55)):
+						if (offset == (1345,40)):
 							generate_pl_char('notnull', images, offset, background)	
-						elif (offset == (1155,55)):
+						elif (offset == (1173,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('number', images, offset, background)
 
 				elif (rand_num == 5):
 					for offset in offsets:
-						if (offset == (978,55) or offset == (1155,55)):
+						if (offset == (1000,40) or offset == (1173,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
 				elif (rand_num == 6):
 					for offset in offsets:
-						if (offset == (805,55) or offset == (978,55)):
+						if (offset == (825,40) or offset == (1000,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
 				elif (rand_num == 7):
 					for offset in offsets:
-						if (offset == (805,55) or offset ==  (1330,55)):
+						if (offset == (825,40) or offset ==  (1348,40)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
 				elif (rand_num == 8):
 					for offset in offsets:
-						if (offset == (978,55)):
+						if (offset == (1000,40)):
 							generate_pl_char('number', images, offset, background)
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
 
 			elif (i % 3 == 2):
-				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(640,135))
-				characters += addDistrictPL((150,55),(315,55),(480,55),background, source)
-				offsets = [(700,55),(870,55),(1040,55),(1205,55),(1370,55)]
+				images = images_small
+				source = source_small
+				background.paste(Image.open(os.path.abspath('../../PL/znamka.png')),(645,135))
+				characters += addDistrictPL((155,55),(320,55),(485,55),background, source)
+				offsets = [(705,55),(875,55),(1045,55),(1210,55),(1375,55)]
 				rand_num = random.randint(1,3)
 				if (rand_num == 1):
 					for offset in offsets:
@@ -447,16 +489,15 @@ def main():
 
 				elif (rand_num == 2):
 					for offset in offsets:
-						if (offset == (1370,55)):
+						if (offset == (1375,55)):
 							generate_pl_char('letter', images, offset, background)
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
 				elif (rand_num == 3):
 					for offset in offsets:
-						if (offset == (1205,55) or offset == (1370,55)):
+						if (offset == (1210,55) or offset == (1375,55)):
 							generate_pl_char('letter', images, offset, background)
-
 						else:
 							generate_pl_char('notnull', images, offset, background)
 
@@ -476,9 +517,10 @@ def main():
 		            raise
 
 		type_of_car = carType(nation, source)
-		# Creating .txt file that includes to license-plate number 
+		# Creating .txt file that includes license-plate number and nation shortcut
 		txtfile = open(textdir + 'rz' + str(i) + '.png.txt','w')
 		txtfile.write(str(characters)+ ' ' + nation + type_of_car)
 		txtfile.close()
 		background.save(outputdir + 'rz' + str(i) + '.png')
+		background.close()
 main()

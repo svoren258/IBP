@@ -35,7 +35,7 @@ def argparse(argv):
 			print (
 				'Usage: python clicker.py -i [src_path]\n'
 				'	Click on the corners of license number to get 4 corner coordinates of it.\n'
-				'	After clicking, you can move red point on the picture (indicates position) in following way:\n'
+				'	After clicking on the picture, you can move red point on the picture (indicates position) in following way:\n'
 				'	key W - UP\n'
 				'	key A - LEFT\n'
 				'	key S - DOWN\n'
@@ -117,17 +117,17 @@ def get_four_points(im):
     return data['points']
 
 # Read destination image
-for root, dirs, files in os.walk('/home/svoren258/Dokumenty/FIT_VUT/3_BIT/IBP/IBP/photo_templates_front/'):
+for root, dirs, files in os.walk(os.path.abspath(src_path)):
 	for file_name in files:
 		if file_name.endswith('.txt'):
 			continue
-		im_dst = cv2.imread('photo_templates_front/'+file_name,1)
+		im_dst = cv2.imread(os.path.abspath(src_path)+'/'+file_name,1)
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
 
 		# Get four corners of the billboard
 		pts_dst = get_four_points(im_dst)
 
-		file = open('photo_templates_front/'+file_name+'skuska.txt','w')
+		file = open(os.path.abspath(src_path)+'/'+file_name+'.txt','w')
 		file.write(str(pts_dst)+"\n")
 		file.close()
 		
