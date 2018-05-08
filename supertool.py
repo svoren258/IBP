@@ -73,7 +73,6 @@ def add_gaussian_noise(image_in):
 	    noisy_image[:,:,1] = temp_image[:,:,1] + noise
 	    noisy_image[:,:,2] = temp_image[:,:,2] + noise
 	
-	# noisy_image = convert_to_uint8(noisy_image)
 	return noisy_image
    
 
@@ -84,13 +83,6 @@ def gaussianNoise(img):
 	noise = cv2.randn(img,m,s)
 	noisy_image = cv2.add(noise, img)
 	return noisy_image
-
-
-def convert_to_uint8(image_in):
-    temp_image = np.float64(np.copy(image_in))
-    showImage(temp_image)
-    cv2.normalize(temp_image, temp_image, 0, 255, cv2.NORM_MINMAX, dtype=-1)
-    return temp_image.astype(np.uint8)
 
 # Function creates output directory
 def createOutputDir():
@@ -137,19 +129,8 @@ def createJson(file_name, coordinates, outputDir, i, gauss, motion):
 	json_file.write(json_string)
 	json_file.close()
 
-def changeBlckAndWhiteValues(im_src):
+def changeBlackAndWhiteValues(im_src):
 	(B, G, R) = cv2.split(im_src)
-
-	# for x in range(0,255):
-	# 	if (x < 127):
-	# 		R[R == x] = x + 10
-	# 		G[G == x] = x + 10
-	# 		B[B == x] = x + 10
-
-	# 	else:
-	# 		R[R == x] = x - 10
-	# 		G[G == x] = x - 10
-	# 		B[B == x] = x - 10
 
 	R[R == 0] = 50
 	G[G == 0] = 50
@@ -186,14 +167,13 @@ def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinat
 	h, status = cv2.findHomography(pts_src, pts_dst)
 
 	# Warp source image
-	im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)#, borderMode=cv2.BORDER_TRANSPARENT)
-	
+	im_temp = cv2.warpPerspective(im_src, h, (im_dst.shape[1],im_dst.shape[0]), cv2.INTER_LINEAR)
+
 	# Black out polygonal area in destination image.
 	cv2.fillConvexPoly(im_dst, pts_dst.astype(int), 0, 16)
-
+	
 	# Add warped source image to destination image.
 	im_out = im_dst + im_temp
-
 	return im_out
 
 	#Resize image to wanted size
@@ -219,11 +199,11 @@ def getSourceImage(file_name):
 			im_hsv[x,y][2] *= 0.675
 
 	im_src = cv2.cvtColor(im_hsv, cv2.COLOR_HSV2BGR)
-	
+
 	# Resize registration number to apply antialiasing
 	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
-	im_src = changeBlckAndWhiteValues(im_src)
+	im_src = changeBlackAndWhiteValues(im_src)
 
 	im_src = cv2.fastNlMeansDenoisingColored(im_src,None,8,8,7,21)
 
@@ -237,13 +217,14 @@ def getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y):
 	file = open(path_to_tmp + tmp + '.txt','r')
 	points = file.read()
 	points = ast.literal_eval(points)
-	
+
 	for point in points:
 		coordinates.append(point)
 		coordinates_x.append(point[0])
 		coordinates_y.append(point[1])
 
 	pts_dst = np.vstack(points).astype(float)
+	
 	return pts_dst
 
 # Function returns coordinates of license plate image (source image)
@@ -264,7 +245,7 @@ def getSourcePoints(im_src):
 # Function applies to the image motion blur
 def applyMotionBlur(image):
 
-	size = 15
+	size = 17
 	# generating the kernel
 	kernel_motion_blur = np.zeros((size, size))
 	kernel_motion_blur[int((size-1)/2), :] = np.ones(size)
@@ -307,7 +288,8 @@ def main():
 			im_out = createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinates_y)			
 
 			final_coords = getFinalCoords(coordinates_x, coordinates_y)
-			# Adding Gaussian blur added to output image
+
+			# Adding Gaussian blur to output image
 			blured_out = cv2.GaussianBlur(im_out,(5,5),0)
 			createJson(file_name, final_coords, outputDir, i, True, False)
 
@@ -320,7 +302,7 @@ def main():
 			coordinates_y = []
 			coordinates = []
 
-			#Save image to output directory
+			# Save image to output directory
 			cv2.imwrite(outputDir+str(i)+'.jpg', blured_out)
 			i += 1
 
