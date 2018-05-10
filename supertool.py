@@ -66,12 +66,13 @@ def add_gaussian_noise(image_in):
 	noise = np.random.randn(h, w) * noise_sigma
 	noisy_image = np.zeros(temp_image.shape, np.float64)
 
-	if len(temp_image.shape) == 2:
-	    noisy_image = temp_image + noise
-	else:
-	    noisy_image[:,:,0] = temp_image[:,:,0] + noise
-	    noisy_image[:,:,1] = temp_image[:,:,1] + noise
-	    noisy_image[:,:,2] = temp_image[:,:,2] + noise
+	# if len(temp_image.shape) == 2:
+	#     noisy_image = temp_image + noise
+	# else:
+
+	noisy_image[:,:,0] = temp_image[:,:,0] + noise
+	noisy_image[:,:,1] = temp_image[:,:,1] + noise
+	noisy_image[:,:,2] = temp_image[:,:,2] + noise
 	
 	return noisy_image
    
@@ -113,16 +114,30 @@ def createJson(file_name, coordinates, outputDir, i, gauss, motion):
 	info = reg_num.split()
 	txtfile.close()
 
-	data = {
-		'lp_text' : info[0],
-		'nation' : info[1],
-		'point0' : coordinates[0],
-		'point1' : coordinates[1],
-		'point2' : coordinates[2],
-		'point3' : coordinates[3],
-		'gaussian_blur' : gauss,
-		'motion_blur' : motion,
-	}
+
+	if len(info) == 3:
+		data = {
+			'lp_text' : info[0],
+			'nation' : info[1],
+			'cartype' : info[2], 
+			'point0' : coordinates[0],
+			'point1' : coordinates[1],
+			'point2' : coordinates[2],
+			'point3' : coordinates[3],
+			'gaussian_blur' : gauss,
+			'motion_blur' : motion,
+		}
+	else:
+		data = {
+			'lp_text' : info[0],
+			'nation' : info[1],
+			'point0' : coordinates[0],
+			'point1' : coordinates[1],
+			'point2' : coordinates[2],
+			'point3' : coordinates[3],
+			'gaussian_blur' : gauss,
+			'motion_blur' : motion,
+		}
 
 	json_string = json.dumps(data, sort_keys=True)
 	json_file = open(outputDir+str(i)+'.jpg.json','w')
@@ -174,7 +189,6 @@ def createOutputImage(im_src, im_dst, pts_src, pts_dst, coordinates_x, coordinat
 	
 	# Add warped source image to destination image.
 	im_out = im_dst + im_temp
-	return im_out
 
 	#Resize image to wanted size
 	output_img = im_out[int(0.8*min(coordinates_y)):int(1.2*max(coordinates_y)), int(0.8*min(coordinates_x)):int(1.2*max(coordinates_x))]
@@ -216,6 +230,7 @@ def getSourceImage(file_name):
 def getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y):
 	file = open(path_to_tmp + tmp + '.txt','r')
 	points = file.read()
+
 	points = ast.literal_eval(points)
 
 	for point in points:
@@ -223,8 +238,7 @@ def getDestinationPoints(tmp, coordinates, coordinates_x, coordinates_y):
 		coordinates_x.append(point[0])
 		coordinates_y.append(point[1])
 
-	pts_dst = np.vstack(points).astype(float)
-	
+	pts_dst = np.vstack(points).astype(int)
 	return pts_dst
 
 # Function returns coordinates of license plate image (source image)
@@ -238,7 +252,7 @@ def getSourcePoints(im_src):
 			            [size[1] - 1, 0],
 			            [size[1] - 1, size[0] -1],
 			            [0, size[0] - 1 ]
-			            ],dtype=float
+			            ],dtype=int
 			           );
 	return pts_src
 
@@ -277,9 +291,6 @@ def main():
 			pts_src = getSourcePoints(im_src)
 			
 			tmp = random.choice(templates)
-			
-			# Prints name of random chosen file from template files
-			print(tmp)
 
 			im_dst = getDestinationImage(tmp)
 

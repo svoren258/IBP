@@ -23,7 +23,6 @@ inputnum = 0
 outputdir = os.path.abspath('RZ')+'/'
 nation = ''
 characters = ''
-pl_spz = ''
 
 # Argument parser
 def argparse(argv):
@@ -58,7 +57,7 @@ def argparse(argv):
 
 # Function returns character according to czech or slovak license number rules 
 def generate_char(offset, images, nation):
-	global pl_spz
+
 	character = random.choice(images)
 	regex = r"([A-Z].png)"
 	regex1 = r"([1-9].png)"
@@ -205,11 +204,11 @@ def createImagesArray(images, source):
 
 def carType(nation, source):
 	if nation == 'h':
-		if source == os.path.abspath('H/characters_e/'):
-			return ' E-CAR or CNG'
-		elif source == os.path.abspath('H/characters_taxi/'):
+		if source == os.path.abspath('../../H/characters_e/'):
+			return ' E-CAR'
+		elif source == os.path.abspath('../../H/characters_taxi/'):
 			return ' TAXI'
-		elif source == os.path.abspath('H/characters_truck/'):
+		elif source == os.path.abspath('../../H/characters_truck/'):
 			return ' TRUCK'
 		else:
 			return ''
@@ -263,24 +262,6 @@ def main():
 			background.paste(sign_img, sign_img_offset)
 			offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
 			characters += addDistrictSK((196,40), (366,40), background, source)
-			# offsets = [(196,40),(366,40),(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
-
-
-			# for offset in offsets:
-			# 	if offset == (196,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/K.png')),(196,40))
-			# 	elif offset == (366,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/E.png')),(366,40))
-			# 	elif offset == (683,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/K.png')),(683,40))
-			# 	elif offset == (853,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/E.png')),(853,40))
-			# 	elif offset == (1023,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/B.png')),(1023,40))
-			# 	elif offset == (1193,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/A.png')),(1193,40))
-			# 	elif offset == (1363,40):
-			# 		background.paste(Image.open(os.path.abspath('SK/characters/B.png')),(1363,40))
 
 		elif (nation == 'cz'):	
 
@@ -302,7 +283,6 @@ def main():
 				background.paste(ek_img, ek_offset, ek_img)
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
-
 
 		elif (nation == 'h'):
 
