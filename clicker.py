@@ -14,13 +14,14 @@ import os
 import random
 import cv2
 import re
-import sys, getopt
+import sys
+import getopt
 import errno
 from matplotlib import pyplot as plt
 from PIL import Image
 
 coordinates = []
-src_path = 'photo_templates_front/'
+src_path = 'photo_templates2/'
 
 # Input arguments parser
 def argparse(argv):
@@ -35,7 +36,7 @@ def argparse(argv):
 			print (
 				'Usage: python clicker.py -i [src_path]\n'
 				'	Click on the corners of license number to get 4 corner coordinates of it.\n'
-				'	After clicking on the picture, you can move red point on the picture (indicates position) in following way:\n'
+				'	After clicking on the picture, you can move red point on the picture (that indicates position) in following way:\n'
 				'	key W - UP\n'
 				'	key A - LEFT\n'
 				'	key S - DOWN\n'
@@ -47,9 +48,12 @@ def argparse(argv):
 			sys.exit()
 		elif opt in ("-i"):
 			src_path = arg
-
-	print 'Source Path: ', src_path
-
+			if os.path.exists(arg):
+				print 'Source Path: ', src_path
+			else:
+				print 'Path to directory does not exist.'
+				return
+		
 argparse(sys.argv[1:])
 
 # Function handles mouse and keyboard events
@@ -103,6 +107,7 @@ def mouse_handler(event, x, y, flags, data) :
 						data['points'].append([x,y])
 	       			break
 
+# Function calls mouse_handler and returns 4 coordinates as 
 def get_four_points(im):
     # Set up data to send to mouse handler
     data = {}
@@ -116,22 +121,24 @@ def get_four_points(im):
     
     return data['points']
 
-# Read destination image
+# Iterating the directory, that includes automobile photos
 for root, dirs, files in os.walk(os.path.abspath(src_path)):
 	for file_name in files:
 		if file_name.endswith('.txt'):
 			continue
+		# Reading destination image
 		im_dst = cv2.imread(os.path.abspath(src_path)+'/'+file_name,1)
+		# Resizing destination image
 		im_dst = cv2.resize(im_dst, (0,0), fx=0.25, fy=0.25) 
 
-		# Get four corners of the billboard
+		# Get four corners of the license plate
 		pts_dst = get_four_points(im_dst)
 
 		file = open(os.path.abspath(src_path)+'/'+file_name+'.txt','w')
 		file.write(str(pts_dst)+"\n")
 		file.close()
 		
-		# Display image.
+		# Display image
 		while(1):
 			cv2.imshow("Image", im_dst)
 			k = cv2.waitKey(20) & 0xFF

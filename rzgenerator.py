@@ -14,11 +14,14 @@ import random
 import cv2
 import shutil
 import re
-import sys, getopt
+import sys
+import getopt
 import errno
 from matplotlib import pyplot as plt
 from PIL import Image
+from progress.bar import Bar
 
+# Global variables definition
 inputnum = 0
 outputdir = os.path.abspath('RZ')+'/'
 nation = ''
@@ -87,7 +90,7 @@ def generate_char(offset, images, nation):
 			if offset == num_offset and not re.search(regex,character[1]):
 				character = generate_char(offset, images, nation)
 
-	elif (nation == 'h'): # [(250,48),(460,48),(670,48),(990,48),(1170,48),(1350,48)]
+	elif (nation == 'h'):
 		for num_offset in [(250,48),(460,48),(670,48),(260,48),(470,48),(680,48)]:
 			if offset == num_offset and not re.search(regex,character[1]):
 				character = generate_char(offset, images, nation)
@@ -98,6 +101,7 @@ def generate_char(offset, images, nation):
 
 	return character
 
+# Function returns randomly chosen character type
 def return_char(type_of_char, images):
 	numbers = r"([0-9].png)"
 	notnull = r"([1-9].png)"
@@ -177,6 +181,7 @@ def addDistrictSK(offset1, offset2, background, source):
 	background.paste(Image.open(source+'/'+sk_shortcuts[rand][1]+'.png'),offset2)
 	return sk_shortcuts[rand]
 
+# Function pastes wanted character type on the background image
 def generate_pl_char(character, images, offset, background):
 	global characters
 	if (character == 'number'):
@@ -193,6 +198,7 @@ def generate_pl_char(character, images, offset, background):
 		background.paste(notnull[0], offset)
 		characters += notnull[1][0]
 
+# Function iterates the directory that include character images
 def createImagesArray(images, source):
 	os.chdir(source)
 	for root, dirs, files in os.walk(source):
@@ -202,6 +208,7 @@ def createImagesArray(images, source):
 
 	return images
 
+# Function returns type of automobile license plate in case of hungarian LP
 def carType(nation, source):
 	if nation == 'h':
 		if source == os.path.abspath('../../H/characters_e/'):
@@ -229,14 +236,17 @@ def main():
 	if (nation == 'sk'):
 		source = os.path.abspath('SK/characters/')
 		images = createImagesArray(images, source)
+
 	elif (nation == 'cz'):
 		source = os.path.abspath('CZ/characters/')
 		images = createImagesArray(images, source)
+
 	elif (nation == 'pl'):
 		source_classic = os.path.abspath('PL/characters/')
 		source_small = os.path.abspath('PL/characters_small/')
 		images_classic = createImagesArray(images_classic, source_classic)
 		images_small = createImagesArray(images_small, source_small)
+
 	elif (nation == 'h'):
 		source_classic = os.path.abspath('H/characters/')
 		source_taxi = os.path.abspath('H/characters_taxi/')
@@ -248,21 +258,24 @@ def main():
 		images_e = createImagesArray(images_e, source_e)
 
 	else:
-		print('Wrong nationality shortcut inserted, try help fo r more information.')
+		print('Wrong nationality shortcut inserted, try help for more information.')
 		return
 
-
+	bar = Bar('In progress', max=int(inputnum))
 	for i in range(int(inputnum)):
 		characters = ''
+
+		# Slovak license plates
 		if (nation == 'sk'):
 			
 			background = Image.open(os.path.abspath('../vzor_sk.png'),'r')
-			sign_img = Image.open(os.path.abspath('../znak_vec.png'),'r')
+			sign_img = Image.open(os.path.abspath('../znak.png'),'r')
 			sign_img_offset = (524,100)
 			background.paste(sign_img, sign_img_offset)
 			offsets = [(683,40),(853,40),(1023,40),(1193,40),(1363,40)]
 			characters += addDistrictSK((196,40), (366,40), background, source)
 
+		# Czech license plates
 		elif (nation == 'cz'):	
 
 			background = Image.open(os.path.abspath('../vzor_cz.png'),'r')
@@ -284,12 +297,12 @@ def main():
 
 			offsets = [(205,53),(358,53),(511,53),(854,53),(1007,53),(1160,53),(1313,53)]
 
+		# Hungarian license plates
 		elif (nation == 'h'):
 
 			if (i % 1500 == 0):
 				images = images_taxi
 				source = source_taxi
-				# source = os.path.abspath('../../H/characters_taxi/')
 				background = Image.open(os.path.abspath('../vzor4_h.png'), 'r')
 				dash_img = Image.open(os.path.abspath('../-_taxi.png'), 'r')
 				dash_offset = (880,150)
@@ -298,7 +311,6 @@ def main():
 			elif (i % 1500 == 1):
 				images = images_truck
 				source = source_truck
-				# source = os.path.abspath('../../H/characters_truck/')
 				background = Image.open(os.path.abspath('../vzor5_h.png'), 'r')
 				dash_img = Image.open(os.path.abspath('../-_truck.png'),'r')
 				dash_offset = (880,150)
@@ -307,17 +319,14 @@ def main():
 			elif (i % 1500 == 2):
 				images = images_e
 				source = source_e
-				# source = os.path.abspath('../../H/characters_e/')
 				background = Image.open(os.path.abspath('../vzor6_h.png'),'r')
 				dash_img = Image.open(os.path.abspath('../-_e.png'), 'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1175,48),(1350,48)]
-				# os.chdir('../../')
 
 			elif (i % 2 == 0):
 				images = images_classic
 				source = source_classic
-				#source = os.path.abspath('H/characters/')
 				background = Image.open(os.path.abspath('../vzor2_h.png'), 'r')
 				dash_img = Image.open(os.path.abspath('../-.png'), 'r')
 				dash_offset = (890,150)
@@ -326,13 +335,13 @@ def main():
 			elif (i % 2 == 1):
 				images = images_classic
 				source = source_classic
-				# source1 = os.path.abspath('H/characters/')
 				background = Image.open(os.path.abspath('../vzor3_h.png'), 'r')
 				dash_img = Image.open(os.path.abspath('../-.png'), 'r')
 				dash_offset = (880,150)
 				offsets = [(250,48),(460,48),(670,48),(990,48),(1175,48),(1350,48)]
 			background.paste(dash_img, dash_offset)
 
+		# Polish license plates
 		elif (nation == 'pl'):
 			background = Image.open(os.path.abspath('../vzor_pl.png'),'r')
 			if (i % 3 == 0):
@@ -497,10 +506,13 @@ def main():
 		            raise
 
 		type_of_car = carType(nation, source)
+
 		# Creating .txt file that includes license-plate number and nation shortcut
 		txtfile = open(textdir + 'rz' + str(i) + '.png.txt','w')
 		txtfile.write(str(characters)+ ' ' + nation + type_of_car)
 		txtfile.close()
 		background.save(outputdir + 'rz' + str(i) + '.png')
 		background.close()
+		bar.next()
+	bar.finish()
 main()

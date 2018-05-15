@@ -21,11 +21,14 @@ import errno
 import json
 from matplotlib import pyplot as plt
 from PIL import Image
+from progress.bar import Bar
 
-path_to_tmp = 'photo_templates_front2/'
+# Global variables definition
+path_to_tmp = 'photo_templates/'
 path_to_rz = 'RZ/'
 path_to_output = 'final/'
 
+# Function parses command line input arguments
 def argparse(argv):
 	global path_to_tmp
 	global path_to_rz
@@ -65,6 +68,8 @@ def add_gaussian_noise(image_in):
 	w = temp_image.shape[1]
 	noise = np.random.randn(h, w) * noise_sigma
 	noisy_image = np.zeros(temp_image.shape, np.float64)
+
+	# In case of monochrome picture
 
 	# if len(temp_image.shape) == 2:
 	#     noisy_image = temp_image + noise
@@ -127,6 +132,7 @@ def createJson(file_name, coordinates, outputDir, i, gauss, motion):
 			'gaussian_blur' : gauss,
 			'motion_blur' : motion,
 		}
+
 	else:
 		data = {
 			'lp_text' : info[0],
@@ -144,6 +150,7 @@ def createJson(file_name, coordinates, outputDir, i, gauss, motion):
 	json_file.write(json_string)
 	json_file.close()
 
+# Function splits RGB image to single plane, changes value and then joins RGB channels of the image 
 def changeBlackAndWhiteValues(im_src):
 	(B, G, R) = cv2.split(im_src)
 
@@ -158,7 +165,7 @@ def changeBlackAndWhiteValues(im_src):
  	im_src = cv2.merge([B, G, R])
  	return im_src
 
-# Function returns final coordinates of the license plate included in output image
+# Function returns final coordinates of the license plate included in the output image
 def getFinalCoords(coordinates_x, coordinates_y):
 	new_coords_x = []
 	new_coords_y = []
@@ -217,9 +224,7 @@ def getSourceImage(file_name):
 	# Resize registration number to apply antialiasing
 	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
-	im_src = changeBlackAndWhiteValues(im_src)
-
-	im_src = cv2.fastNlMeansDenoisingColored(im_src,None,8,8,7,21)
+	#im_src = changeBlackAndWhiteValues(im_src)
 
     #Application of Gaussian noise
 	im_src = add_gaussian_noise(im_src)
@@ -256,7 +261,7 @@ def getSourcePoints(im_src):
 			           );
 	return pts_src
 
-# Function applies to the image motion blur
+# Function applies motion blur to the image
 def applyMotionBlur(image):
 
 	size = 17
@@ -281,6 +286,7 @@ def main():
 	argparse(sys.argv[1:])
 	outputDir = createOutputDir()
 	templates = createTemplates()
+	bar = Bar('In progress', max=len(os.listdir(path_to_rz))/2)
 	for root, dirs, files in os.walk(path_to_rz):
 		for file_name in files:
 			if file_name.endswith('.txt'):
@@ -316,5 +322,6 @@ def main():
 			# Save image to output directory
 			cv2.imwrite(outputDir+str(i)+'.jpg', blured_out)
 			i += 1
-
+			bar.next()
+		bar.finish()
 main()
