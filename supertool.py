@@ -224,7 +224,7 @@ def getSourceImage(file_name):
 	# Resize registration number to apply antialiasing
 	im_src = cv2.resize(im_src, (0,0), fx=0.375, fy=0.375, interpolation = cv2.INTER_AREA)
 
-	#im_src = changeBlackAndWhiteValues(im_src)
+	im_src = changeBlackAndWhiteValues(im_src)
 
     #Application of Gaussian noise
 	im_src = add_gaussian_noise(im_src)
